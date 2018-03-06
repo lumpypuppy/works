@@ -1,0 +1,825 @@
+<script type="text/javascript" src="https://verticalbridge.sharepoint.com/SiteAssets/jquery-3.1.1.min.js"></script>
+<script type="text/javascript">
+//alert("Heartbeat!")
+'use strict';
+_spBodyOnLoadFunctionNames.push("BodyLoaded");
+function BodyLoaded(){
+//alert("step1")
+var siteno = window.location.href.split("SiteNo=")[1].substring(0,10).toUpperCase();
+
+//alert(siteno);
+//alert(siteno.toLowerCase());
+//alert((siteno.toLowerCase() != "undefined"));
+
+if(siteno.toLowerCase() != "undefined"){
+	window.siteNo = siteno;
+//	alert("true : " + window.siteNo)
+}else{
+var gettingSiteNo = GetSiteNo();
+gettingSiteNo.done(function(dSiteNo){
+	window.siteNo = dSiteNo;
+	//alert(dSiteNo)
+//		alert("false : " + window.siteNo)
+	});	
+}	
+document.getElementById("dSpinner").style.visibility = "visible";
+GetDocumentTypes();
+//dSpinner.style.visibility = "hidden";
+}
+
+function GetSiteNo(){
+	var deferred = jQuery.Deferred();
+	var dealNumber = GetDealNumber();
+	//alert("dealNumber :"+dealNumber)
+	var endPoint = "https://verticalbridge.sharepoint.com/teams/leasing/_api/web/lists/getbytitle('Leasing%20Deal%20Pipeline')/items?$filter=Title eq '"+dealNumber+"'";
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET',endPoint)
+	xhr.setRequestHeader("accept", "application/json;odata=verbose");
+	xhr.onload = function() {
+    if (xhr.status === 200) {
+		var dResponseText = JSON.parse(xhr.responseText);
+		var results = dResponseText.d.results;
+		var siteNo = results[0].Site_x0020_No
+		//alert("siteNo : "+siteNo)
+		//window.siteNo = siteNo;
+		deferred.resolve(siteNo)
+	}
+    else {
+        alert('Request failed.  Returned status of ' + xhr.status);
+    }
+
+}
+xhr.onloadend = function(){
+	if(xhr.status == 0){
+	  //alert("xhr.status : " + xhr.status)
+	}
+}
+xhr.send();	
+	// var siteNo = deferred.promise();
+	// siteNo.done(function(siteNo){return siteNo});
+	return deferred.promise();
+}
+function GetSiteNo3(){
+	var windowLocation =  window.location.toString();
+//	alert(window.location.toString());
+	   var siteNumberPresent =  window.location.toString().indexOf("SiteNo=") > -1
+	 if(siteNumberPresent){
+	  var dSiteNo = window.location.toString().split("SiteNo=")[1].replace("%2D","-").substring(0,10);
+	   alert(window.location)
+	  return dSiteNo;
+	 }else{
+			alert("No Site Number available on the url for tagging this document.")
+		  }
+	}
+	
+function dSiteNo() {
+//alert("dSiteNo")
+var siteNo = GetSiteNo();
+siteNo.done(
+function(siteNo){
+	//alert("siteNo1 :"+siteNo)
+	return siteNo;
+	}
+	);
+
+}
+
+function GetFolderProperties() {
+		var folderColor = GetFolderColor();
+		var serverUrl;
+		var serverRelativeUrlToFolder;
+		var digestRequest;
+		var siteNo = window.siteNo;
+	if(folderColor=='null'){
+		alert("Saving to Deal Documents for site number : "+siteNo)
+		serverUrl = _spPageContextInfo.webAbsoluteUrl;
+		serverRelativeUrlToFolder = 'Deal Documents';
+		digestRequest = jQuery("#__REQUESTDIGEST").val();
+		addFileToFolder2(serverUrl,serverRelativeUrlToFolder,digestRequest);
+	}else{
+		serverUrl = _spPageContextInfo.webAbsoluteUrl;
+		var siteAddress = GetSiteAddress();
+		siteAddress.done(function(siteAddress){
+		siteAddress = siteAddress.split("/SiteDocuments/")[0];	
+		serverUrl = "https://verticalbridge.sharepoint.com" + siteAddress;
+		serverRelativeUrlToFolder = "SiteDocuments/" + folderColor;
+		var remoteDigestRequest = GetRemoteRequestDigest(serverUrl);
+		remoteDigestRequest.done(function(remoteDigestRequest){
+		digestRequest = remoteDigestRequest;
+		addFileToFolder2(serverUrl,serverRelativeUrlToFolder,digestRequest);
+		});
+		});
+		}
+		
+	}
+
+function uploadFile() {
+var browseSelection = document.getElementById("getFile").value;
+if(!browseSelection){
+	alert("Please browse and select a file to upload first")
+	return false;
+}else{
+    var fileInput = jQuery('#getFile');
+	var newName = BuildDocName();
+    var serverUrl = _spPageContextInfo.webAbsoluteUrl;
+    var getFile = getFileBuffer(fileInput);
+    getFile.done(function (arrayBuffer) {
+		var addFile = addFileToFolder(arrayBuffer);
+        addFile.done(function (file, status, xhr) {
+            alert("file :"+file.d.ListItemAllFields.__deferred.uri)
+			// Get the list item that corresponds to the uploaded file.
+            var getItem = getListItem(file.d.ListItemAllFields.__deferred.uri);
+            //alert("getItem:"+getItem.length)
+			getItem.done(function (listItem, status, xhr) {
+                // Change the display name and title of the list item.
+				//alert("listItem.d.__metadata" + listItem.d.__metadata)
+                var changeItem = updateListItem(listItem.d.__metadata);
+                changeItem.done(function (data, status, xhr) {
+					//document.getElementById("dSpinner").style.visibility = "hidden";
+					//var finalUpload = FinalFileUpload();
+                    //alert('File uploaded : ' + JSON.stringify(changeItem));
+					document.getElementById("dSpinner").style.visibility = "hidden";
+					alert("File Uploaded")
+					windowClosing();
+                });
+                changeItem.fail(onError);
+            });
+            getItem.fail(onError);
+        });
+        addFile.fail(onError);
+    });
+    getFile.fail(onError);
+}
+}
+function GetSiteAddress(){
+var siteNo = window.siteNo;
+var endPoint = "https://testextranet.verticalbridge.com/Beam/GetSiteInfo/" + siteNo;
+var deferred = jQuery.Deferred();
+var xhr = new XMLHttpRequest();
+xhr.open('GET',endPoint,true);
+xhr.onload = function() {
+    if (xhr.status === 200) {
+		var dsiteInfo = JSON.parse(xhr.responseText)[0]
+		if(!dsiteInfo){
+			alert("Site not found for this deal. Please make sure the deal has a site associated to it.");
+			return false;
+		}
+//		alert(JSON.stringify(dsiteInfo))
+		var dDocumentUrl = dsiteInfo.DocumentURL;
+//		alert(dDocumentUrl)
+		deferred.resolve(dDocumentUrl);
+	}
+    else {
+        alert('Request failed.  Returned status of ' + xhr.status);
+    }
+}
+xhr.onloadend = function(){
+	if(xhr.status == 0){
+		alert("xhr.onloadend status = 0")
+	}
+}
+xhr.send();	
+return deferred.promise();
+}
+
+function  GetSiteAddress1(){
+		var options = document.getElementById("selectDocumentType");
+		var dSelection = options[options.selectedIndex];		
+		if(dSelection.text != "Select Document Type"){
+			var dSiteAddress = dSelection.getAttribute("folder");
+		}
+return dSiteAddress;	
+}
+
+function addFileToFolder(arrayBuffer) {
+		var folderColor = GetFolderColor();
+		var serverUrl;
+		var serverRelativeUrlToFolder;
+		var digestRequest;
+	if(folderColor=='null'){
+		document.querySelectorAll("#subTitle")[0].innerHTML = "Saving to Deal Documents";
+		document.getElementById("dSpinner").style.visibility = "visible";		
+		//alert("Saving to Deal Documents")
+		serverUrl = _spPageContextInfo.webAbsoluteUrl;
+		serverRelativeUrlToFolder = 'Deal Documents';
+		digestRequest = jQuery("#__REQUESTDIGEST").val();
+		addFileToFolder2(arrayBuffer,serverUrl,serverRelativeUrlToFolder,digestRequest,folderColor);
+	}else{
+		document.querySelectorAll("#subTitle")[0].innerHTML = "Saving to Floyd Sites";
+		document.getElementById("dSpinner").style.visibility = "visible";
+		//alert("Saving to Floyd Sites")
+		serverUrl = _spPageContextInfo.webAbsoluteUrl;
+		var siteAddress = GetSiteAddress();
+		siteAddress.done(function(siteAddress){
+		siteAddress = siteAddress.split("/SiteDocuments/")[0];	
+		serverUrl = "https://verticalbridge.sharepoint.com" + siteAddress;
+//		serverUrl = "http://portal.verticalbridge.com" + siteAddress;
+
+		serverRelativeUrlToFolder = "SiteDocuments/" + folderColor;
+		var remoteDigestRequest = GetRemoteRequestDigest(serverUrl);
+		remoteDigestRequest.done(function(remoteDigestRequest){
+		digestRequest = remoteDigestRequest;
+		addFileToFolder2(arrayBuffer,serverUrl,serverRelativeUrlToFolder,digestRequest,folderColor);
+		});
+		});
+		}
+	}
+function addFileToFolder2(arrayBuffer,serverUrl,serverRelativeUrlToFolder,digestRequest,folderColor){	
+		var fileInput = jQuery('#getFile');
+        var parts = fileInput[0].value.split('\\');
+        var fileName = parts[parts.length - 1];
+		var fileExtention = fileName.split(".")[1]	
+		var fileName = BuildDocName() + "." + fileExtention;
+        var fileCollectionEndpoint = String.format(
+                "{0}/_api/web/getfolderbyserverrelativeurl('{1}')/files" +
+                "/add(overwrite=true, url='{2}')",
+                serverUrl, serverRelativeUrlToFolder, fileName);				
+				//alert("fileCollectionEndpoint : "+fileCollectionEndpoint+"| digestRequest : "+digestRequest)
+        jQuery.ajax({
+            url: fileCollectionEndpoint,
+            type: "POST",
+            data: arrayBuffer,
+            processData: false,
+            headers: {
+                "accept": "application/json;odata=verbose",
+                "X-RequestDigest": digestRequest,
+                "content-length": arrayBuffer.byteLength
+            },success : function(response){
+				
+				//alert("success "+ response.d.ListItemAllFields.__deferred.uri)
+			var uri = response.d.ListItemAllFields.__deferred.uri
+			//alert("FolderColor : " + folderColor)
+			if(folderColor == 'null'){
+			
+            var getItem = getListItem(uri);
+            //alert("getItem:"+getItem.length)
+			getItem.done(function (listItem, status, xhr) {
+                // Change the display name and title of the list item.
+//				alert("listItem.d.__metadata" + listItem.d.__metadata)
+                var changeItem = updateListItem(listItem.d.__metadata);
+                changeItem.done(function (data, status, xhr) {
+					//document.getElementById("dSpinner").style.visibility = "hidden";
+					//var finalUpload = FinalFileUpload();
+                    //alert('File uploaded : ' + JSON.stringify(changeItem));
+					document.getElementById("dSpinner").style.visibility = "hidden";
+					alert("File Uploaded")
+					windowClosing();
+                });
+                changeItem.fail(onError);
+            });
+            getItem.fail(onError);
+			
+			
+			
+			}else{
+				document.getElementById("dSpinner").style.visibility = "hidden";
+				alert("File Uploaded")
+				windowClosing();
+			}
+			
+			
+			
+			
+			
+			
+			}
+        });
+    }
+
+function GetFolderColor(){
+				var options = document.getElementById("selectDocumentType");
+				var dSelection = options[options.selectedIndex];
+		
+		if(dSelection.text != "Select Document Type"){
+		var dFolder = dSelection.getAttribute("folder");
+		}
+return dFolder;		
+}
+
+function GetRemoteRequestDigest(targetSite){
+var deferred = jQuery.Deferred();
+jQuery.ajax({
+        url: targetSite + "/_api/contextinfo",
+        type: "POST",
+        headers: { 
+            "accept": "application/json;odata=verbose",
+            "content-type": "application/json;odata=verbose",
+            "X-RequestDigest": $("#__REQUESTDIGEST").val()
+        },success: function(response){
+			var result = response.d;	
+			var contextWebInformation = result.GetContextWebInformation;
+			var remoteDigestRequest = contextWebInformation.FormDigestValue;
+			deferred.resolve(remoteDigestRequest);
+		},error: function(){alert("Erro getting remote request digest")}
+});
+return deferred.promise();
+}
+
+function SaveByFolderColor() {
+//alert(uri)
+var folderColor = GetFolderColor();
+if(folderColor!='null'){
+GetRemoteRequestDigest(folderColor);
+}else{
+	document.querySelectorAll("#subTitle")[0].innerHTML = "Saving to Deal Documents";
+	document.getElementById("dSpinner").style.visibility = "visible";	
+	//alert("Saving to Deal Documents")
+	var targetSite = "https://verticalbridge.sharepoint.com/teams/leasing/";
+	var targetFolderPath = "Deal Documents";	
+	var requestDigest = $('#__REQUESTDIGEST').val();
+	SaveFile(targetSite,targetFolderPath,requestDigest)
+}
+}
+
+function SaveFile(targetSite,targetFolderPath,requestDigest){
+var sourceFileName = "D-0004563_CollocationApplication.txt";
+var sourceSite = "https://verticalbridge.sharepoint.com/teams/leasing/";
+var sourceFolderPath = "Uploader"
+var sourceFileName = "D-0004563_CollocationApplication.pdf";
+var sourceSiteUrl = sourceSite + "_api/web/GetFolderByServerRelativeUrl('" + sourceFolderPath + "')/Files('" + sourceFileName + "')/$value";
+var targetSiteUrl = targetSite + "_api/web/GetFolderByServerRelativeUrl('" + targetFolderPath + "')/Files/Add(url='" + sourceFileName + "',overwrite=true)";
+var xhr = new XMLHttpRequest();
+xhr.open('GET', sourceSiteUrl, true);
+xhr.setRequestHeader('binaryStringResponseBody', true);
+xhr.responseType = 'arraybuffer';
+xhr.onload = function (e) {
+    if (this.status == 200) {
+        var arrayBuffer = this.response;
+//		alert("arrayBuffer : " + arrayBuffer)
+        $.ajax({
+            url: targetSiteUrl,
+            method: 'POST',
+            data: arrayBuffer,
+            processData: false,
+            headers: { 'binaryStringRequestBody': 'true', 'accept': 'application/json;odata=verbose;charset=utf-8', 'X-RequestDigest': requestDigest }
+        })
+            .done(function (postData) {
+                alert('Save File Succeeded');
+            })
+            .fail(function (jqXHR, errorText) {
+                alert('Error on SaveFie : ' + JSON.stringify(jqXHR));
+            });
+    }
+}
+xhr.send();
+	
+}
+
+
+
+</script>
+<style type="text/css">
+.hiddenRow{
+	display:none;
+}
+#dToolbar{
+    margin-top: 80px;
+}
+#dSpinnerTable{
+    margin-top: -135px;
+    margin-left: -120px;
+}
+.ms-webpartPage-root {
+    border-spacing: 0px;
+}
+.UploaderRow {
+    margin-bottom:15px;
+}
+#DocumentTypeDropdown{
+
+}
+#addFileButton{
+	margin-left:0px;
+}
+#DeltaPlaceHolderPageTitleInTitleArea{
+
+}
+#contentRow {
+
+}
+#selectDocumentType{
+width: 260px;
+margin-bottom:-1px;
+}
+#uploadComment{
+height:80px;
+width: 250px;
+}
+#counter
+{
+    margin-top: -28px;
+}
+#subTitle{
+	position:relative;
+	top:-15px;
+}
+#getFile{
+	margin-top:15px;
+	padding:.5px;
+}
+#siteIcon,#SearchBox,#sideNavBox,#DeltaTopNavigation,#s4-ribbonrow,#suiteBarDelta{
+	display:none;
+}
+#s4-workspace{
+	width:600px;
+	height:500px;
+}
+#contentBox{
+    margin-right: 20px;
+    margin-left: 120px;
+    min-width: 340px;
+}
+
+</style>
+<table>
+<tbody>
+<tr>
+<td class="UploaderCell">
+<div id="UploaderContent">
+<div class="UploaderRow" id="browseAndSave">
+<table>
+<tbody>
+<tr>
+<td id="subTitle">
+</td>
+</tr>
+<tr>
+<td class="UploaderCell">
+<input id="getFile" type="file" onchange="browseBoxChanged()"/>
+</td>
+<td class="UploaderCell">
+<table  id="dSpinnerTable" >
+<tbody>
+<tr><td><img id="dSpinner" src='https://verticalbridge.sharepoint.com/_layouts/images/gears_an.gif'/></td></tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="UploaderRow UploaderCell" id="DocumentTypeDropdown">
+<table>
+<tbody>
+<tr>
+<td class="UploaderCell">
+<select class="UploaderRow UploaderCell" name="Document Type" id="selectDocumentType" onchange="DocTypeSelected(this)"></select>
+</td>
+<td class="UploaderCell">
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div>
+<input type="text" style="display:none;" value="Enter a unique name" />
+</div>
+<div id="Comments">
+<table>
+<tbody>
+<tr>
+<td>
+<textarea class="UploaderCell UploaderRow" onblur="commentBoxOnBlur(this)" onfocus="commentBoxOnFocus(this)" onkeyup="textCounter(this,'counter',255);" id="uploadComment">Enter comment under 255 characters...</textarea>
+</td>
+</tr>
+<tr>
+<td>
+<input disabled  maxlength="3" size="3" value="255" id="counter">
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="UploaderRow" id="UploaderToolbar">
+<table>
+<tbody>
+<tr>
+<td class="UploaderCell">
+<input id="addFileButton" type="button" value="Save" onclick="uploadFile()"/>
+</td>
+<td class="UploaderCell">
+<input id="cancelButton" type="button" value="Cancel" onclick="cancelUpload()"/>
+</td>
+<td>
+<input id="tryButton" type="button" value="Try" onclick=""/>
+</td>
+</tr>
+<tr>
+<td colspan=3>
+<span id="DisplayDocName"></span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="UploaderRow" id="displayNameHidden">
+</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+
+<script type="text/javascript">
+//alert("Heartbeat!")
+'use strict';
+
+
+    // Add the file to the file collection in the Shared Documents folder.
+
+function commentBoxOnBlur(dBox){
+if ( dBox.value == "" ) {
+ dBox.value = "Enter comment under 255 characters...";
+ }
+}
+function commentBoxOnFocus(dBox){
+if ( dBox.value == "Enter comment under 255 characters..." ) {
+ dBox.value = "";
+ }
+}
+
+function textCounter(field,field2,maxlimit)
+{
+ var countfield = document.getElementById(field2);
+ 
+ if ( field.value.length > maxlimit ) {
+  field.value = field.value.substring( 0, maxlimit );
+  return false;
+ } else {
+  countfield.value = maxlimit - field.value.length;
+ }
+}
+
+function browseBoxChanged(){
+document.getElementById("DocumentTypeDropdown").style.visibility = "visible"
+}
+
+function DoneLoading(){
+document.getElementById("dSpinner").style.visibility = "hidden";
+
+}
+
+function GetDocumentType(){
+ var docTypeBox = document.getElementById("selectDocumentType");
+ var docTypeValue = docTypeBox.value;
+ var docTypeSelected = docTypeBox.options[docTypeBox.selectedIndex].text;
+ return docTypeSelected;
+}
+
+function GetDealNumber(){
+	var windowLocation =  window.location.toString();
+//	alert(window.location.toString());
+	   var dealNumberPresent =  window.location.toString().indexOf("DealNumber=") > -1
+	 if(dealNumberPresent){
+	  var dDealNumber = window.location.toString().split("DealNumber=")[1].replace("%2D","-").substring(0,8);
+	   //alert(dDealNumber)
+	  return dDealNumber;
+	 }else{
+			alert("No Leasing Deal Number available on the url for tagging this document.")
+		  }
+	}
+
+function BuildDocName(dSelection){
+		if(!dSelection){
+				var options = document.getElementById("selectDocumentType");
+				var dSelection = options[options.selectedIndex];
+		}
+		if(dSelection.text == "Select Document Type"){
+			alert("Please select a Document Type");
+			return false;
+		}
+		var docType = dSelection.text;
+		var dFolder = dSelection.getAttribute("folder");
+		var dealNumber = GetDealNumber();
+		//var docType = docType.replace(" ","").replace(" ","").replace(" ","").replace(" ","").replace(" ","");
+		var docName = "";
+		if(dFolder=="null"){
+		  docName = dealNumber + "_" + docType + "_" + window.siteNo;
+ 		}else{
+		 //var siteNo = GetSiteNo();			
+		  docName = dealNumber + "_" + docType + "_" + window.siteNo;	
+		}
+		document.querySelectorAll("#DeltaPlaceHolderPageTitleInTitleArea")[0].innerHTML = "Uploading";
+
+		
+//		var subTitleDiv = document.createElement("div");
+//		var subTitleText = document.createTextNode(docName);
+//		subTitleDiv.appendChild(subTitleText)
+//		subTitleDiv.id="subTitleDiv";		
+//		titleArea.parentNode.appendChild(subTitleDiv);
+//		document.querySelectorAll("#DisplayDocName")[0].innerHTML = docName;
+
+		//alert("Document will be saved as : " + docName);
+		return docName;
+}
+
+
+
+function DocTypeSelected(options){
+ 	 var dSelection = options[options.selectedIndex];
+	 var docName = BuildDocName(dSelection);
+	 //alert(docName)
+ 	document.querySelectorAll("#subTitle")[0].innerHTML = docName;
+	}
+
+function tryButton1(){
+//	alert("truButton")
+	GetDocumentTypes();
+}
+function LoadDocumentTypes(docTypes){
+	//alert(docTypes.length)
+		var options = "<option value=-1 folder=null >Select Document Type</option>";
+		for(var docType in docTypes){
+			options += "<option value=" + docType + " folder="+ docTypes[docType].Folder_x0020_Color + ">" + docTypes[docType].Title + "</option>"
+		}
+//		alert(options)
+		document.getElementById("selectDocumentType").innerHTML = options;
+		DoneLoading();
+}
+
+function GetDocumentTypes(){
+//alert("GetContentTypes");
+var endPoint = "https://verticalbridge.sharepoint.com/teams/leasing/_api/web/lists/getbytitle('Document Types')/items";
+//var endPoint = "https://verticalbridge.sharepoint.com/teams/leasing/_api/web/lists/getbytitle('Library1')/items?$filter=(Deal_x0020_Number eq '"+itemID+"') and (Document_x0020_Type eq 'CollocationApplication')";
+var xhr = new XMLHttpRequest();
+xhr.open('GET', endPoint, true);
+xhr.setRequestHeader("accept", "application/json;odata=verbose");
+xhr.onload = function() {
+    if (xhr.status === 200) {
+		var dResponseText = JSON.parse(xhr.responseText);
+		var docTypes = dResponseText.d.results;
+		LoadDocumentTypes(docTypes);
+	}
+    else {
+        alert('Request failed.  Returned status of ' + xhr.status);
+    }
+}
+xhr.onloadend = function(){
+	if(xhr.status == 0){
+	  alert("xhr.status : " + xhr.status)
+	}
+}
+xhr.send();
+}
+
+
+function RemoveDistractions(){
+////Removing Save and Cancel bottons;	
+//	var listFormToolBarTop = document.getElementById("listFormToolBarTop");
+//	var contentRow = document.getElementById("contentRow");
+//document.getElementById("s4-ribbonrow").style.display = "none";
+//document.getElementById("sideNavBox").style.display = "none";	
+//document.getElementById("DeltaSuiteLinks").style.display = "none";
+//document.getElementById("contentBox").style.marginLeft = "22px";
+
+}
+
+function windowClosing(){
+//	alert("windowClosing");
+//alert(window.dealNumber)
+if(window.dealNumber){
+//	SetInputValues();
+var keyLable = window.dealNumber + "DocName";
+//localStorage.setItem(keyLable,window.docName);
+var keyValue = window.docType + "," + window.docName
+localStorage.setItem(keyLable,keyValue);
+//alert("Sender keyLable : " + keyLable + " Sender content : "+localStorage.getItem(keyLable))
+	}
+					window.close();	
+}
+
+function updateDocumentName(){
+	var documentType = document.querySelectorAll("select[title='Document Type']")[0] !=null ? document.querySelectorAll("select[title='Document Type']")[0] : alert("Failed to get Document Type box on this form.");
+//alert("documentType : "+documentType)
+	var selectedDocumentType = documentType.options[documentType.selectedIndex].text;
+//alert("selectedDocumentType"+selectedDocumentType);	
+	var docTypeNoSpaces = selectedDocumentType.replace(/ /g,'');
+//alert(docTypeNoSpaces)
+	var revisionNumberInput = document.querySelectorAll("input[title='Rev Number']")[0] !=null ? document.querySelectorAll("input[title='Rev Number']")[0] : alert("Failed to get Rev Number box on this form.");
+	var revisionNumber = revisionNumberInput.value;
+	//	var revisionNumber = revisionNumberInput.value != "" ? revisionNumberInput.value : "0";	
+//	alert(window.docName)
+//	var docExtension = document.querySelectorAll(".ms-fileField-fileExt")[0].innerHTML;
+	var docOriginalName = document.getElementById("getFile").value;
+	var docExtension = docOriginalName.substring(docOriginalName.lastIndexOf("."));
+//	alert(docExtension)
+//	window.docTitle = docName + docExtension;
+
+	window.docType = selectedDocumentType;
+
+////If no revision number entered leave the file name alone 
+if(revisionNumber == ""){
+	window.docName = window.dealNumber + "_" + docTypeNoSpaces + docExtension;
+}else{	
+	window.docName = window.dealNumber + "_" + docTypeNoSpaces + "_Rev" + revisionNumber + docExtension;
+}
+
+	 ////Updating Title and Name
+	 document.getElementById("displayName").value = window.docName;
+	 var inputName = "Title";
+	 var dInput = document.querySelectorAll("input[title='"+inputName+"']")[0] !=null ? document.querySelectorAll("input[title='"+inputName+"']")[0] : alert("Failed to get input "+ inputName);
+	 dInput.value = window.docName.split(".")[0];
+
+	 var inputName = "Name Required Field";
+	 var dInput = document.querySelectorAll("input[title='"+inputName+"']")[0] !=null ? document.querySelectorAll("input[title='"+inputName+"']")[0] : alert("Failed to get input "+ inputName);	
+	 dInput.value = window.docName;
+//alert("Saving " + window.docName);
+//return true;
+}
+    function addDataToField(inputName,inputData) {
+	var dInput = document.querySelectorAll("input[title='"+inputName+"']")[0] !=null ? document.querySelectorAll("input[title='"+inputName+"']")[0] : alert("14Failed to get input box "+ inputName);
+		if(dInput){
+			dInput.value = inputData;
+		}
+	}
+	
+	function selectDropDown(ddTitle,dValue){
+	var selectElement = document.querySelectorAll("select[title='"+ddTitle+"']")[0] !=null ? document.querySelectorAll("select[title='"+ddTitle+"']")[0] : alert("15Failed to get input box "+ inputName);
+	if(selectElement){
+	 selectElement.options[selectElement.selectedIndex].value = dValue;
+	 selectElement.options[selectElement.selectedIndex].textContent = dValue;	
+	}
+	}
+	
+
+
+function cancelUpload(){
+window.close();
+}
+
+    // Get the local file as an array buffer.
+    function getFileBuffer(fileInput) {
+		//alert("getFileBuffer")
+        var deferred = jQuery.Deferred();
+        var reader = new FileReader();
+		reader.onloadend = function (e) {
+			//alert("onloadend")
+            deferred.resolve(e.target.result);
+        }
+        reader.onerror = function (e) {
+            alert("onerror")
+			deferred.reject(e.target.error);
+        }
+		
+        reader.readAsArrayBuffer(fileInput[0].files[0]);
+        //alert(reader)
+		return deferred.promise();
+    }
+
+
+    // Get the list item that corresponds to the file by calling the file's ListItemAllFields property.
+    function getListItem(fileListItemUri) {
+
+        // Send the request and return the response.
+        return jQuery.ajax({
+            url: fileListItemUri,
+            type: "GET",
+            headers: { "accept": "application/json;odata=verbose" }
+        });
+    }
+
+    // Change the display name and title of the list item.
+    function updateListItem(itemMetadata) {
+	//	alert("updateListItem " + itemMetadata)
+	var doctype = GetDocumentType();
+	var dealNumber = GetDealNumber();
+	var newName = BuildDocName();
+	var uploadComment = document.getElementById("uploadComment").innerHTML;
+	uploadComment = uploadComment != "Enter comment under 255 characters..." ? uploadComment : "";
+    //alert("uploadComment"+uploadComment)
+	var body = String.format("{{'__metadata':{{'type':'{0}'}},'FileLeafRef':'{1}','Title':'{2}','Deal_x0020_Number':'{3}','Upload_x0020_Comment':'{4}', 'Document_x0020_Type':'{5}'}}",itemMetadata.type, newName, newName,dealNumber,uploadComment,doctype);	
+	//alert("body : "+body+" | jQuery('#__REQUESTDIGEST').val() : " + jQuery("#__REQUESTDIGEST").val() + "| itemMetadata.etag : " + itemMetadata.etag + "| body.length : "+body.length+"| url: itemMetadata.uri :" + itemMetadata.uri)
+	
+        return jQuery.ajax({
+            url: itemMetadata.uri,
+            type: "POST",
+            data: body,
+            headers: {
+                "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
+                "content-type": "application/json;odata=verbose",
+                "content-length": body.length,
+                "IF-MATCH": itemMetadata.etag,
+                "X-HTTP-Method": "MERGE"
+            }
+			//,success: function(data){UploadByFolderColor(itemMetadata.uri)}
+			//,success: function(data){SaveByFolderColor()}
+			,error: function(request, status, error){alert("error 1:" + request.responseText)}
+			
+        });
+    }
+
+
+// Display error messages. 
+function onError(error) {
+	var dError = error.responseText;
+	if(dError.indexOf("The specified name is already in use.")>-1){
+	document.getElementById("dSpinner").style.visibility = "hidden";
+    alert("Document exist. Please select different document type or revision number");
+//	getFile = null;
+	}
+}
+
+
+</script>
+
+

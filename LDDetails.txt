@@ -1,0 +1,493 @@
+
+<button id="proceedBtn" class="button"  onclick="Proceed();return false;">Proceed</button>
+<button id="actionsBtn" class="button"  onclick="GetOtherActions();return false;">Actions</button>
+<button id="addDocBtn" class="button" onClick="return popitup();">Attach</button>
+
+<style type="text/css">
+.ms-qcb-leftzone li:nth-child(1){
+	display:none;
+}
+.ms-dragDropAttract-subtle{
+	display:none;
+	
+}
+#ManualRefresh {
+    display: block;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: url(https://verticalbridge.sharepoint.com/teams/development/SiteAssets/Refresh30x30.jpg) no-repeat;
+    width: 30px;
+    height: 60px;
+    padding-left: 30px;
+    position: absolute;
+    top: 65px;
+}
+/* hidding the id cell*/
+table[summary='TD Pipeline']    tr td + td + td + td + td + td + td + td + td + td + td + td  {
+	display:none;
+}
+/* hidding the id header */
+table[summary='TD Pipeline'] thead th + th + th + th + th + th + th + th + th + th + th + th {
+	display:none;
+}
+
+/* hidding the id cell*/
+table[summary='TD Tasks']    tr td + td + td + td + td {
+	display:none;
+}
+/* hidding the id header */
+table[summary='TD Tasks'] thead th + th + th + th + th {
+	display:none;
+}
+#SiteInfo{
+	marging-top:-150px;
+}
+
+
+
+</style>
+
+<script src="https://verticalbridge.sharepoint.com/teams/development/_layouts/15/sp.workflowservices.js"></script>
+
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script> -->
+<script type="text/javascript">
+//alert("heartbit")
+function popitup() {
+	var dealNumber = GetldNumber();
+	//alert(dealNumber)
+	var currentList = window.location.pathname.split("/")[3];
+	//alert("currentList = " + currentList)
+if(currentList.toLowerCase() == "leasingdealpipeline"){
+//alert("Attaching document to deal "+window.dealNumber)
+//			var url = "http://portal.verticalbridge.com/Leasing/CollocationApplications/Forms/NewFile.aspx?$&DealNumber=" + window.dealNumber + "&SiteNo=" + window.siteNo
+			 ////If this is a new item then preset document type as collocation application.
+			 if(window.currentForm == 1){
+			  //var url = "http://portal.verticalbridge.com/Leasing/Deal%20Documents/Forms/EditForm.aspx?DealParams&DealNumber="+ window.dealNumber +"&SiteNo=" + window.siteNo + "&DocType=Collocation%20Application"
+//			  var url = "http://portal.verticalbridge.com/Leasing/CollocationApplications/Forms/NewFile.aspx?DealParams&DealNumber="+ window.dealNumber +"&SiteNo=" + window.siteNo + "&DocType=Collocation%20Application";
+//			  var url = "https://verticalbridge.sharepoint.com/teams/leasing/TD%20Documents/Forms/Upload.aspx?DealParams&DealNumber="+ window.dealNumber +"&SiteNo=" + window.siteNo + "&DocType=Collocation%20Application";
+			  var url = "https://verticalbridge.sharepoint.com/teams/leasing/SitePages/Uploader.aspx?DealNumber="+ window.dealNumber + "&DocType=Collocation%20Application";
+			 }else{
+				// var url = "http://portal.verticalbridge.com/Leasing/CollocationApplications/Forms/NewFile.aspx?$&DealNumber=" + window.dealNumber + "&SiteNo=" + window.siteNo
+//				var url = "http://portal.verticalbridge.com/Leasing/CollocationApplications/Forms/NewFile.aspx?DealParams&DealNumber="+ window.dealNumber +"&SiteNo=" + window.siteNo;
+//				var url = "https://verticalbridge.sharepoint.com/teams/development/TD%20Documents/Forms/Upload.aspx?DealParams&DealNumber="+ window.dealNumber +"&SiteNo=" + window.siteNo;
+				var url = "https://verticalbridge.sharepoint.com/teams/leasing/SitePages/Uploader.aspx?DealNumber="+ window.dealNumber;
+
+				}
+			}else{
+//				   var url = "https://verticalbridge.sharepoint.com/teams/development/TD%20Documents/Forms/Upload.aspx?$&DealNumber=" + window.dealNumber + "&SiteNo=" + window.siteNo
+				   var url = "https://verticalbridge.sharepoint.com/teams/leasing/SitePages/Uploader.aspx?DealNumber=" + window.dealNumber + "&SiteNo=" + window.siteNo;
+//alert("url: "+ url)
+				   }	
+		var newwindow=window.open(url,'_blank','height=500,width=500');
+		if (window.focus){
+		 newwindow.focus()
+		}
+		return false;
+}
+function OtherActions(){
+	//alert("Other Actions")
+	var dUrl = "https://verticalbridge.sharepoint.com/teams/development/wfsvc/d050b1c9525b4c678f674e602e2f4a1a/WFInitForm.aspx?List=55c4a814-b5fb-4fee-bd89-72f8191352a1&ID=160&TemplateID=96741BD4-8C4C-4098-85E1-87884F1490F2&WF4=1&Source=https://verticalbridge.sharepoint.com/teams/development/SitePages/Tower%20Development%20Details.aspx?TDNumber=TD-000648&InitialTabID=Ribbon.Read"
+	//var currenURL 
+	window.location = dUrl;
+	document.getElementById("ManualRefresh").parentNode.click();
+}
+function GetOtherActions(){
+       var dList = document.querySelectorAll("table[summary='TD Pipeline']")[0];
+	   var dHeaders = dList.rows[0].cells;
+	   var dRow = dList.rows[1];
+	   var dTitlePosition = GetHeaderPosition("Other Actions",dHeaders);
+	   var dLink = dRow.cells[dTitlePosition].querySelectorAll("a")[0].getAttribute("href");
+	   var currentUrl = window.location;
+	   //alert(dLink)
+	   window.location = dLink+"&Source="+currentUrl;
+	   document.getElementById("ManualRefresh").parentNode.click();
+}
+
+_spBodyOnLoadFunctionNames.push("BodyLoaded");
+function BodyLoaded(){
+	//alert("BodyLoaded");
+if(window.location.toString().toLowerCase().indexOf("webpartpage") > -1){
+//alert("Now in Editing mode. Code cancelled");
+	return false;
+}else{
+//alert("Running code");		
+}
+//alert("getting deal number")
+var ldNumber = GetldNumber();
+sessionStorage.ldNumber = ldNumber;
+//alert(sessionStorage.ldNumber)
+var ldItemID = GetLDItemID();
+sessionStorage.tdItemID = tdItemID;
+//alert(sessionStorage.tdItemID)
+//var dItemID = getItemID();
+//var dResponse = getResponse();
+//UpdateResponse(dItemID,dResponse);
+//GetTaskList();
+//starSpinner();
+}
+
+function GetTask(taskID){
+//var itemId = getItemID();
+//alert(itemId)	
+//var endPointUrl = "https://verticalbridge.sharepoint.com/teams/development/_api/web/lists/GetByTitle('TD%20Tasks')/items(itemId)/ContentType"
+var taskName = GetTaskName();
+var endPointUrl = "https://verticalbridge.sharepoint.com/teams/development/_api/web/lists/GetByTitle('TD%20Tasks')/items?filter=TaskName eq " + taskName;
+//alert(endPointUrl)
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+ 	//alert(xhr.responseText)
+	//var response = xhr.responseText;
+	var response = JSON.parse(xhr.responseText)
+	var results = response.d.results;
+	//JSON.parse(xhr.responseText);
+	alert(response)
+    }
+};
+ xhr.open("GET", endPointUrl, true);
+// xhr.responseType = 'json';
+ xhr.setRequestHeader("accept","application/json;odata=verbose");
+ xhr.send()
+
+}
+
+
+function GetHeaderPosition(headerName,dHeaders){
+	  var dColumnPosition = -1;
+	   for(var i=0;i<dHeaders.length;i++){
+		   var dHeaderCell = dHeaders[i]
+		   var dHeaderDiv = dHeaderCell.querySelectorAll("div")[0];
+		   if(dHeaderDiv){
+		      var dHeaderName = dHeaderDiv.getAttribute("displayname"); 
+		      if(dHeaderName == headerName){
+				dColumnPosition = i;  
+			  }		  
+		   }
+	   }
+	   return dColumnPosition;
+}
+
+function GetTaskID(){
+	   var dTaskID = -1;
+	   var dTaskName = GetWaitingValue();
+	   //alert("dTaskName : "+ dTaskName)
+       var dList = document.querySelectorAll("table[summary='TD Tasks']")[0];
+	   var dHeaders = dList.rows[0].cells;
+//	   var dRow = dList.rows[1];
+	   var dRows = dList.rows;	
+	   var dTitlePosition = GetHeaderPosition("Title",dHeaders);
+		//alert("dTitlePosition : "+dTitlePosition);   	   
+	   var dRowIndex = -1;
+	   var tasksCount = 0;
+	   for(var i=0;i<dRows.length;i++){
+			var thisRow = dRows[i];
+			var titleCell = thisRow.cells[dTitlePosition];
+			var thisRowTitle = titleCell.innerHTML;
+			//alert("thisRowTitle : "+thisRowTitle)
+			if(thisRowTitle == dTaskName){
+				dRowIndex = i;
+				tasksCount = tasksCount + 1
+			}
+	   }
+	   //alert("tasksCount : "+tasksCount)
+	   if(tasksCount > 1){
+			alert("More than one task with the same title detected. Please remove duplicated tasks before continue.");
+			return;
+	   }
+	   if(tasksCount < 1){
+			return;
+	   }
+
+	   var dRow = dList.rows[dRowIndex];
+    	var dIDColumnPosition = -1;
+	    for(var i=0;i<dHeaders.length;i++){
+		   var dHeaderCell = dHeaders[i]
+		   var dHeaderDiv = dHeaderCell.querySelectorAll("div")[0];
+		   if(dHeaderDiv){
+		      var dHeaderName = dHeaderDiv.getAttribute("name");   
+		      if(dHeaderName == "ID"){
+				dIDColumnPosition = i;  
+				dTaskID = dRow.cells[i].innerHTML;
+			  }		  
+		   }
+	   }
+	   return dTaskID;	
+		//alert(dTaskID);
+	  }
+function GetFieldValue(dFieldName,dList,dRowNumber){
+	//alert(" dFieldName : " + dFieldName + " dListName : " + dList.getAttribute("summary") + " dRowNumber :" + dRowNumber)
+	   var dCellValue;
+   	   var dHeaders = dList.rows[0]
+	   if(dHeaders){
+		   dHeaders.cells;
+	   }
+	   var dRow = dList.rows[dRowNumber]
+	   var dWaitingColumnPosition = -1;
+	   for(var i=0;i<dHeaders.length;i++){
+		   var dHeaderCell = dHeaders[i]
+		   var dHeaderDiv = dHeaderCell.querySelectorAll("div")[0];
+		   if(dHeaderDiv){
+		      var dHeaderName = dHeaderDiv.getAttribute("displayname");   
+		      if(dHeaderName == dFieldName){
+				dWaitingColumnPosition = i;  
+				dCellValue = dRow.cells[i].innerHTML;
+			  }		  
+		   }
+	   }
+	  return dCellValue;	
+}	  
+		function GetLDItemID(){
+		   var dItemID;
+		   var dList = document.querySelectorAll("table[summary='TD Pipeline']")[0];
+		   dItemID = GetFieldValue("ID",dList,1)
+		   //alert(dItemID)
+		   return dItemID;
+	   }	  
+	  
+function GetWaitingValue(){
+	   var dWaitingCellValue;
+       var dList = document.querySelectorAll("table[summary='TD Pipeline']")[0];
+	   var dHeaders = dList.rows[0].cells;
+	   var dRow = dList.rows[1];
+	   var dCell = dRow.cells[9];
+	//   alert(dCell.innerHTML);
+	   //var dHeaders = dList.querySelectorAll(".ms-vh-div")
+	   var dWaitingColumnPosition = -1;
+	   for(var i=0;i<dHeaders.length;i++){
+		   var dHeaderCell = dHeaders[i]
+		   var dHeaderDiv = dHeaderCell.querySelectorAll("div")[0];
+		   if(dHeaderDiv){
+		      var dHeaderName = dHeaderDiv.getAttribute("name");   
+		      if(dHeaderName == "Waiting"){
+				dWaitingColumnPosition = i;  
+				dWaitingCellValue = dRow.cells[i].innerHTML;
+			  }		  
+		   }
+	   }
+	  return dWaitingCellValue;	
+}
+function GetTaskName(){
+	var waitingFor = GetWaitingValue();
+	var ldNumber = GetldNumber();
+	var dTaskName = ldNumber + " - " + waitingFor;
+	return dTaskName;
+}
+function MakeDoneEqualWaiting(){
+	//alert("MakeDoneEqualWaiting");
+	var dListName = "TD Pipeline";
+    var dList = document.querySelectorAll("table[summary='" + dListName + "']")[0];
+	var dItemID = GetFieldValue("ID",dList,1);
+	var waitingValue = GetFieldValue("Waiting",dList,1);
+	var doneValue = GetFieldValue("Done",dList,1);
+	//alert(waitingValue);
+if(waitingValue){
+	if(waitingValue != doneValue){
+    var clientContext = new SP.ClientContext(); 
+    var oList = clientContext.get_web().get_lists().getByTitle(dListName);
+	this.oListItem = oList.getItemById(dItemID);
+	oListItem.set_item('Done', waitingValue);
+    oListItem.update();
+    clientContext.executeQueryAsync(Function.createDelegate(this, this.onUpdateTaskSucceeded), Function.createDelegate(this, this.onQueryFailed));	
+	}else{
+		alert("The pipeline is currently moving forward. No actions taken.")
+	}
+	}else{
+	alert("The pipeline is not waiting at the moment. No actions taken.")
+}
+}
+
+   function Proceed(){
+		   //alert("Proceed")
+		  var taskId = GetTaskID();
+		  //alert("Task ID : " + taskId)
+		  var clientContext = new SP.ClientContext(); 
+		  if(taskId){
+		  var targetList = clientContext.get_web().get_lists().getByTitle('TD Tasks');
+		  targetListItem = targetList.getItemById(taskId);
+		  clientContext.load(targetListItem, 'Status');
+		  clientContext.executeQueryAsync(Function.createDelegate(this, this.onGetTaskListSucceeded), Function.createDelegate(this, this.onQueryFailed));
+	  }else{
+		MakeDoneEqualWaiting();
+	//var siteUrl = "https://verticalbridge.sharepoint.com/teams/development/";
+	//    var clientContext = new SP.ClientContext(siteUrl);
+		var oList = clientContext.get_web().get_lists().getByTitle('TD Pipeline');
+		//var dItemID = GetTaskID();
+		//alert(dItemID)
+		this.oListItem = oList.getItemById(dItemID);
+		oListItem.set_item('oApproveReject', 'Approved');
+		oListItem.set_item('PercentComplete', 1);
+		//    oListItem.set_item('Status', 'Completed');
+		oListItem.update();
+		clientContext.executeQueryAsync(Function.createDelegate(this, this.onUpdateTaskSucceeded), Function.createDelegate(this, this.onQueryFailed));		
+	  } 
+	  }
+   function onGetTaskListSucceeded(){
+		var dStatus = targetListItem.get_item('Status');
+	//var dContentType = targetListItem.get_item('ID');
+	//alert(dContentType)
+		if(dStatus == "Not Started"){
+//		alert("dStatus : "+dStatus)
+			UpdateTask();
+		}else if(dStatus == "Completed") {
+			alert("This task was already completed. No actions taken.")				
+		//	doneLoading();			
+		}
+      // alert('Request succeeded. \n\nRetrieved Item is: ' + targetListItem.get_item('ID'));
+   }
+  function UpdateTask(){
+	//alert("UpdateTask")
+    var siteUrl = "https://verticalbridge.sharepoint.com/teams/development/";
+    var clientContext = new SP.ClientContext(siteUrl);
+    var oList = clientContext.get_web().get_lists().getByTitle('TD Tasks');
+	var dItemID = GetTaskID();
+	//alert(dItemID)
+	this.oListItem = oList.getItemById(dItemID);
+	oListItem.set_item('oApproveReject', 'Approved');
+	oListItem.set_item('PercentComplete', 1);
+	//    oListItem.set_item('Status', 'Completed');
+    oListItem.update();
+    clientContext.executeQueryAsync(Function.createDelegate(this, this.onUpdateTaskSucceeded), Function.createDelegate(this, this.onQueryFailed));
+  }
+  function onUpdateTaskSucceeded(sender, args) {
+	document.getElementById("ManualRefresh").parentNode.click();
+	alert("You have asked to proceed. The pipeline is now moving forward.")
+
+	//var dTitle = document.getElementById("DeltaPlaceHolderPageTitleInTitleArea");
+	//var dMessage = document.getElementById("div_6abab05a-8e11-4381-9b4e-8dcd8279ae2c");
+	//dTitle.innerHTML = "Your response is now recorded"
+	//dMessage.innerHTML = "Thank you for responding to this request. Your response has been recorded for " + getldNumber() + " as " + getResponse();
+	
+	//doneLoading()
+
+	}
+   function onQueryFailed(sender, args) {
+     alert('Request failed. \nError: ' + args.get_message() + '\nStackTrace: ' + args.get_stackTrace());
+   }
+
+
+function GetldNumber(){
+var idPresent =  window.location.toString().indexOf("DealNumber=") > -1
+	if(idPresent){
+	var ldNumber = window.location.toString().split("DealNumber=")[1].indexOf("&") > -1 ? window.location.toString().split("DealNumber=")[1].split("&")[0] : window.location.toString().split("DealNumber=")[1];	
+	window.dealNumber = ldNumber;
+	return ldNumber;
+	}else{
+			alert("No Leasing Deal Number (LDN) available on the url for filtering.");
+	}
+}
+function getItemID(){
+var idPresent =  window.location.toString().indexOf("ID=") > -1
+	if(idPresent){
+	var itemID = window.location.toString().split("ID=")[1].indexOf("&") > -1 ? window.location.toString().split("ID=")[1].split("&")[0] : window.location.toString().split("ID=")[1];	
+	return itemID;
+	}else{
+			alert("No Item ID available on the url for filtering.");
+	}
+}
+function getContentType(){
+var contentTypePresent =  window.location.toString().indexOf("ContentType=") > -1
+	if(contentTypePresent){
+	var dContentType = window.location.toString().split("ContentType=")[1].indexOf("&") > -1 ? window.location.toString().split("ContentType=")[1].split("&")[0] : window.location.toString().split("ContentType=")[1];	
+	return dContentType;
+	}else{
+			alert("No Content Type available on the url for filtering.");
+	}
+}
+function getResponse(){
+var responsePresent =  window.location.toString().indexOf("Response=") > -1
+	if(responsePresent){
+	var dResponse = window.location.toString().split("Response=")[1].indexOf("&") > -1 ? window.location.toString().split("Response=")[1].split("&")[0] : window.location.toString().split("Response=")[1];	
+	dResponse = dResponse.replace("%20"," ")
+	return dResponse;
+	}else{
+			alert("No Item ID available on the url for filtering.");
+	}
+}
+
+function onQuerySucceeded(sender, args) {
+
+//    alert("args : " + args + " sender : "+sender );
+//	var wasApproved = oListItem.get_item("CMA_x0020_Approved");
+//	var pending = oListItem.get_item("CMA_x0020_Approved") == "Pending";
+	var dTitle = document.getElementById("DeltaPlaceHolderPageTitleInTitleArea");
+	var dMessage = document.getElementById("div_6abab05a-8e11-4381-9b4e-8dcd8279ae2c");
+	dTitle.innerHTML = "Your response is now recorded"
+	dMessage.innerHTML = "Thank you for responding to this request. Your response has been recorded for " + getTDNumber();
+	
+//	if(!pending){
+// //		dTitle.innerHTML = "CMA Approved"
+		// dTitle.innerHTML = "Your response is now recorded"
+
+		// dMessage.innerHTML = "Thank you for responding to this request. Your response has been recorded for " + getTDNumber();
+//		}else{
+//		dTitle.innerHTML = "CMA Rejected"		
+	doneLoading()
+
+	}
+	
+
+
+function onQueryFailed(sender, args) {
+
+    alert('Request failed. ' + args.get_message() + '\n' + args.get_stackTrace());
+}
+
+function UpdateResponse(dItemID,dResponse){
+//alert("dItemID :" + dItemID + " dResponse : " + dResponse);
+//var responseValue = dResponse == 'CMA Approved' ? 'Yes' : 'No';
+	var stateValue = "";
+	var pendingField = "";
+	var responseValue = "";
+
+if(dResponse == "ExhibitE Completed"){
+	stateValue = "ExhibitE Completed";
+	pendingField = "Exhibit_x0020_E";
+	responseValue = "Completed";
+	}
+if(dResponse == "CMA Approved"){
+	stateValue = "CMA Reviewed";
+	pendingField = "CMA_x0020_Approved";
+	responseValue = "Yes";
+	}
+if(dResponse == "CMA Rejected"){
+	stateValue = "CMA Reviewed";
+	pendingField = "CMA_x0020_Approved";
+	responseValue = "No";
+	}
+if(responseValue == ""){
+	alert("Response does not match any expected value.")
+}
+	
+
+//var endPointUrl = "https://verticalbridge.sharepoint.com/teams/development/_api/web/lists/GetByTitle('TD Pipeline')/items("+dItemID+")"
+var siteUrl = "https://verticalbridge.sharepoint.com/teams/development/";
+    var clientContext = new SP.ClientContext(siteUrl);
+    var oTaskList = clientContext.get_web().get_lists().getByTitle('TD Pipeline');
+    var oList = clientContext.get_web().get_lists().getByTitle('TD Pipeline');
+
+    this.oListItem = oList.getItemById(dItemID);
+    oListItem.set_item('Done', dResponse);
+
+    oListItem.set_item('State', stateValue);
+    oListItem.set_item(pendingField, responseValue);
+
+    oListItem.update();
+    clientContext.executeQueryAsync(Function.createDelegate(this, this.onQuerySucceeded), Function.createDelegate(this, this.onQueryFailed));
+}
+function starSpinner(){
+var spinnerHTML = "<table width='100%' align='' ><tr><td><img src='https://verticalbridge.sharepoint.com/teams/development/_layouts/images/gears_an.gif'/></td></tr></table>"
+var spinnerContainer = document.createElement("div");
+spinnerContainer.id = "spinnerContainer";
+spinnerContainer.innerHTML = spinnerHTML;	
+var bodyContainer = document.getElementById("contentBox");
+bodyContainer.insertBefore(spinnerContainer, bodyContainer.childNodes[0]);
+//document.getElementById("mainContent").parentNode.parentNode.parentNode.appendChild(spinnerContainer);
+//document.getElementById("spinnerContainehttps://verticalbridge.sharepoint.com/teams/development/SitePages/Home.aspx#r").style.display = "none";
+}
+
+function doneLoading(){
+	//alert("Stopping spinner.")
+	document.getElementById("spinnerContainer").style.display = "none";
+	document.getElementById("DeltaPlaceHolderMain").style.visibility = "visible";
+}
+</script>

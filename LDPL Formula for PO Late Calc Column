@@ -1,0 +1,1 @@
+=IF(AND(Today()-[Date POR Sent to Tenant]>30, [Purchase Order Returned]="No"), "YES", "NO")

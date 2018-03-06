@@ -1,0 +1,7 @@
+<script type="text/javascript">
+var x = document.querySelectorAll("#Tab2MSOZoneCell_WebPartWPQ12"); 
+
+
+
+alert(x);
+</script>

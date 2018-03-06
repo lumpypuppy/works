@@ -1,0 +1,156 @@
+<style>
+#ctl00_ctl33_g_c61d6729_7c64_4265_8074_360baa3c45f6_ctl00_ctl13-bottom > tr:nth-child(4){
+display: none;
+}
+
+#ctl00_ctl33_g_57eb2d9b_49f1_406c_be1d_820c9552a7ed_ctl00_ctl13-bottom > tr:nth-child(5){
+display: none;
+}
+
+#ctl00_ctl33_g_57eb2d9b_49f1_406c_be1d_820c9552a7ed_ctl00_ctl13-bottom > tr:nth-child(1){
+display: none;
+}
+
+#ctl00_ctl33_g_57eb2d9b_49f1_406c_be1d_820c9552a7ed_ctl00_ctl13-bottom > tr:nth-child(2){
+display: none;
+}
+
+#ctl00_ctl33_g_c61d6729_7c64_4265_8074_360baa3c45f6_ctl00_ctl13-bottom > tr:nth-child(5){
+display: none;
+}
+
+
+
+#ctl00_ctl33_g_c61d6729_7c64_4265_8074_360baa3c45f6_ctl00_ctl13-bottom > tr:nth-child(2){
+display: none;
+}
+
+#ctl00_ctl33_g_c61d6729_7c64_4265_8074_360baa3c45f6_ctl00_ctl13-bottom > tr:nth-child(1){
+display: none;
+}
+
+#WebPartWPQ2 > table > tbody > tr > td:nth-child(2) > div{
+display: none;
+}
+
+
+#Status_c15b34c3-ce7d-490a-b133-3f4de8801b76_\24 DropDownChoice_Approved{
+min-width: 6em;
+    padding: 25px 5px;
+    border: 1px solid #ABABAB;
+    background-color: #FDFDFD;
+    background-color: #b0dd57;
+    margin-left: 10px;
+    font-family: "Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 1);
+    border-color: white;
+    border-radius: 100px;
+	-webkit-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	-moz-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+}
+
+#Status_c15b34c3-ce7d-490a-b133-3f4de8801b76_\24 DropDownChoice_Rejected{
+min-width: 6em;
+    padding: 25px 5px;
+    border: 1px solid #ABABAB;
+    background-color: #FDFDFD;
+    background-color: #c72d25;
+    margin-left: 10px;
+    font-family: "Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 1);
+    border-color: white;
+    border-radius: 100px;
+	-webkit-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	-moz-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+}
+
+#Status_c15b34c3-ce7d-490a-b133-3f4de8801b76_\24 DropDownChoice_Pass{
+min-width: 6em;
+    padding: 25px 5px;
+    border: 1px solid #ABABAB;
+    background-color: #FDFDFD;
+    background-color: #b0dd57;
+    margin-left: 10px;
+    font-family: "Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 1);
+    border-color: white;
+    border-radius: 100px;
+	-webkit-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	-moz-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+}
+
+#Status_c15b34c3-ce7d-490a-b133-3f4de8801b76_\24 DropDownChoice_Fail{
+min-width: 6em;
+    padding: 25px 5px;
+    border: 1px solid #ABABAB;
+    background-color: #FDFDFD;
+    background-color: #c72d25;
+    margin-left: 10px;
+    font-family: "Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 1);
+    border-color: white;
+    border-radius: 100px;
+	-webkit-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	-moz-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+}
+
+#Status_c15b34c3-ce7d-490a-b133-3f4de8801b76_\24 DropDownChoice_Yes{
+min-width: 6em;
+    padding: 25px 5px;
+    border: 1px solid #ABABAB;
+    background-color: #FDFDFD;
+    background-color: #b0dd57;
+    margin-left: 10px;
+    font-family: "Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 1);
+    border-color: white;
+    border-radius: 100px;
+	-webkit-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	-moz-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+}
+
+#Status_c15b34c3-ce7d-490a-b133-3f4de8801b76_\24 DropDownChoice_No{
+min-width: 6em;
+    padding: 25px 5px;
+    border: 1px solid #ABABAB;
+    background-color: #FDFDFD;
+    background-color: #c72d25;
+    margin-left: 10px;
+    font-family: "Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 1);
+    border-color: white;
+    border-radius: 100px;
+	-webkit-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	-moz-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+}
+
+#Status_c15b34c3-ce7d-490a-b133-3f4de8801b76_\24 DropDownChoice_Complete{
+min-width: 6em;
+    padding: 25px 5px;
+    border: 1px solid #ABABAB;
+    background-color: #FDFDFD;
+    background-color: #b0dd57;
+    margin-left: 10px;
+    font-family: "Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 1);
+    border-color: white;
+    border-radius: 100px;
+	-webkit-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	-moz-box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+	box-shadow: 10px 10px 12px -10px rgba(0,0,0,0.75);
+}
+
+</style>

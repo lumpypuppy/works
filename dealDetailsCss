@@ -1,0 +1,35 @@
+<style>
+
+#\7b 2A04BA35-4C2A-4559-854E-CE9D43FA9115\7d -\7b 69A35A17-2DD4-4D2D-A1AB-62807EE9E64E\7d > tbody > tr:nth-child(2) > td.ms-stylebox > table{
+    border-top-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+    border-left-width: 0px;
+    width: 100%;
+}
+
+#\7b 2A04BA35-4C2A-4559-854E-CE9D43FA9115\7d -\7b 69A35A17-2DD4-4D2D-A1AB-62807EE9E64E\7d > tbody > tr:nth-child(1) > td{
+display: none;
+
+}
+
+#\7b F2060E74-5378-418A-A21C-339CE17D7F94\7d -\7b 706F0575-6848-4BE4-8DB0-727B19B6A9EF\7d > tbody > tr:nth-child(1) > td{
+display: none;
+}
+
+
+table.ms-listviewtable > tbody > tr > td.ms-stylebox {
+    border: none;
+    text-align: left;
+	
+}
+
+#\7b F2060E74-5378-418A-A21C-339CE17D7F94\7d -\7b 706F0575-6848-4BE4-8DB0-727B19B6A9EF\7d > tbody > tr:nth-child(2) > td.ms-stylebox > table > tbody > tr:nth-child(9) > td.ms-stylelabel{
+width: 50%;
+}
+
+#\7b 2A04BA35-4C2A-4559-854E-CE9D43FA9115\7d -\7b 69A35A17-2DD4-4D2D-A1AB-62807EE9E64E\7d > tbody > tr:nth-child(2) > td.ms-stylebox > table > tbody > tr:nth-child(7) > td.ms-stylelabel{
+width: 50%;
+}
+
+</style>

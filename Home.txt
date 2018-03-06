@@ -1,0 +1,71 @@
+<div id="dNotebook" style="float: left; display: none;"><img onclick="GoToNotebook()" width="25" height="25" title="Team Notebook as a place to compile documentation." class="ms-qcb-button ms-qcb-buttons-alignmentfix js-listview-qcbManageButton js-callout-body js-qcb-button ms-disabled" style="float: left;" src="https://verticalbridge.sharepoint.com/teams/development/SiteAssets/TeamNotebook.jpg"><div style="float: left;margin-left:-12px;marging-top:8px">Team Notebook</div></div>
+<style>
+
+#dNotebook
+{
+    margin-bottom: -48px;
+    margin-left: -172px;
+	position: relative;
+	top: 15px;
+}
+
+</style>
+
+<script type="text/javascript">
+'use strict';
+function getTDNumber(){
+var tdNumberPresent =  window.location.toString().indexOf("TDNumber=") > -1
+	if(tdNumberPresent){
+	var urlTDNumber = window.location.toString().split("TDNumber=")[1].replace("%2D","-").substring(0,9);
+	return urlTDNumber;
+	}else{
+        var sessionTDNumber = sessionStorage.tdNumber;
+		 if(sessionTDNumber){
+			return sessionTDNumber;
+		 }else{
+			alert("No TD-Number available for tagging this document.")
+		}
+	}	
+	}
+_spBodyOnLoadFunctionNames.push("BodyLoaded");
+function BodyLoaded(){
+//var tdNumber = getTDNumber();
+//alert("Heartbeat")	
+SetNotebookIcon();
+}
+function GoToNotebook(){
+		window.location.href = "https://verticalbridge.sharepoint.com/teams/development/_layouts/15/WopiFrame.aspx?sourcedoc={2b58e08d-cb57-4dfb-9ed0-94e22e1409d6}&action=editnew"
+}
+function SetNotebookIcon(){
+var img = new Image();
+var link2Image = "https://verticalbridge.sharepoint.com/SiteAssets/TeamNotebook.jpg"
+//img.id = "dNotebook"
+// img.src = link2Image;
+// img.width = "25"
+// img.height = "25"
+// img.title = "Team Notebook as a place to compile documentation."
+// img.setAttribute("class","ms-qcb-button ms-qcb-buttons-alignmentfix js-listview-qcbManageButton js-callout-body js-qcb-button ms-disabled")
+// img.onclick = function(){
+	// window.location.href = "https://verticalbridge.sharepoint.com/teams/development/_layouts/15/WopiFrame.aspx?sourcedoc={2b58e08d-cb57-4dfb-9ed0-94e22e1409d6}&action=editnew"
+// }
+// var dMainDiv = document.createElement("div");
+// dMainDiv.id = "dNotebook"
+// dMainDiv.appendChild(img);
+// dLi.appendChild(dMainDiv);
+//var link2URL = "https://verticalbridge.sharepoint.com/teams/development/SiteAssets/NotebookGreen2.jpg"
+var container = document.getElementById("QCB1").querySelectorAll("ul")[0];
+//var dLink = document.createElement("a");
+//dLink.href = link2URL;
+//var dLinkText = document.createTextNode("Notebook");
+//dLink.appendChild(dLinkText);
+ var dLi = document.createElement("li");
+ dLi.className = "ms-qcb-item";
+var dButton = document.getElementById("dNotebook");
+dLi.appendChild(dButton);
+container.appendChild(dLi);
+dButton.style.display = "block";
+}
+
+</script>
+
+

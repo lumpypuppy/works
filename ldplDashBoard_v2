@@ -1,0 +1,497 @@
+<script src="//production-assets.codepen.io/assets/common/stopExecutionOnTimeout-b2a7b3fe212eaa732349046d8416e00a9dec26eb7fd347590fbced3ab38af52e.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
+<script src="//production-assets.codepen.io/assets/common/stopExecutionOnTimeout-b2a7b3fe212eaa732349046d8416e00a9dec26eb7fd347590fbced3ab38af52e.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>
+<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+<script src="https://www.amcharts.com/lib/3/funnel.js"></script>
+<script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+<script src="https://www.amcharts.com/lib/3/themes/black.js"></script>
+​<link href='https://fonts.googleapis.com/css?family=Dosis:600' rel='stylesheet' type='text/css'>
+
+
+<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+<div id="steps">
+  <div id=demo1 class="step" data-desc="Phase 1">1</div>
+  <div id=demo2 class="step" data-desc="Phase 2">2</div>
+  <div id=demo3 class="step" data-desc="Phase 3" >3</div>
+  <div id=demo4 class="step" data-desc="Phase 4">4</div>
+  <div id=demo5 class="step" data-desc="Phase 5">5</div>
+  <div id=demo6 class="step" data-desc="Phase 6">6</div>
+  <div id=demo7 class="step" data-desc="Phase 7">7</div>
+  <div id=demo8 class="step" data-desc="Phase 8">8</div>
+  <div id=demo9 class="step" data-desc="Phase 9">9</div>
+  <div id=demo10 class="step" data-desc="Phase 10">10</div>
+  <img src="https://verticalbridge.sharepoint.com/teams/leasing/SiteAssets/Site%20Graphics/phaseArrows.png" alt="Mountain View" style="width:1505px;height:auto; padding-top:25px; padding-bottom:1px;">
+</div>
+
+
+<!--
+  Try adding the active class to another 'step'
+  to see what's going on :)
+-->
+
+
+
+
+<style>
+
+#ManualRefresh {
+    display: block;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: url(https://verticalbridge.sharepoint.com/teams/development/SiteAssets/Refresh30x30.jpg) no-repeat;
+    width: 30px;
+    height: 60px;
+    padding-left: 30px;
+    position: relative;
+    top: 65px;
+}
+
+td.ms-addnew {
+    padding-left: 10px;
+    padding-right: 7px;
+    padding-top: 5px;
+    display: none;
+}
+
+
+.ms-cui-topBar2, .ms-clientcontrol-chromeheader {
+    background-color: rgba(239, 239, 239, 0.80);
+    display: none;
+}
+
+#titleAreaBox {
+    margin-left: 25px;
+    display: none;
+}
+
+#titlerow {
+    background-color: rgba(248, 248, 248, 0.85);
+    display: none;
+}
+
+
+
+#\7b 2A04BA35-4C2A-4559-854E-CE9D43FA9115\7d -\7b 69A35A17-2DD4-4D2D-A1AB-62807EE9E64E\7d > tbody > tr:nth-child(2) > td.ms-stylebox > table{
+    border-top-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+    border-left-width: 0px;
+    width: 100%;
+}
+
+
+#\7b DD8B5B6F-98D2-43FF-A5E5-E40FEE5B6252\7d -\7b 2C8C46DD-06E5-4186-8D19-8100F93F2306\7d > tbody > tr:nth-child(2) > td.ms-stylebox > table > tbody > tr:nth-child(1) > td.ms-stylelabel{
+width: 100%;
+}
+#\7b DD8B5B6F-98D2-43FF-A5E5-E40FEE5B6252\7d -\7b 2C8C46DD-06E5-4186-8D19-8100F93F2306\7d > tbody > tr:nth-child(2) > td.ms-stylebox > table > tbody > tr:nth-child(3) > td.ms-stylebody{
+width: 100%;
+}
+
+
+
+#\7b DD8B5B6F-98D2-43FF-A5E5-E40FEE5B6252\7d -\7b 2C8C46DD-06E5-4186-8D19-8100F93F2306\7d > tbody > tr:nth-child(2) > td.ms-stylebox > table{
+    border-top-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+    border-left-width: 0px;
+    width: 100%;
+}
+
+#\7b 2A04BA35-4C2A-4559-854E-CE9D43FA9115\7d -\7b 69A35A17-2DD4-4D2D-A1AB-62807EE9E64E\7d > tbody > tr:nth-child(1) > td{
+display: none;
+
+}
+
+#\7b F2060E74-5378-418A-A21C-339CE17D7F94\7d -\7b 706F0575-6848-4BE4-8DB0-727B19B6A9EF\7d > tbody > tr:nth-child(1) > td{
+display: none;
+}
+
+#\7b DD8B5B6F-98D2-43FF-A5E5-E40FEE5B6252\7d -\7b 2C8C46DD-06E5-4186-8D19-8100F93F2306\7d > tbody > tr:nth-child(1) > td {
+display: none;
+}
+
+
+
+
+table.ms-listviewtable > tbody > tr > td.ms-stylebox {
+    border: none;
+    text-align: left;
+	
+}
+
+#\7b F2060E74-5378-418A-A21C-339CE17D7F94\7d -\7b 706F0575-6848-4BE4-8DB0-727B19B6A9EF\7d > tbody > tr:nth-child(2) > td.ms-stylebox > table > tbody > tr:nth-child(9) > td.ms-stylelabel{
+width: 50%;
+}
+
+#\7b 2A04BA35-4C2A-4559-854E-CE9D43FA9115\7d -\7b 69A35A17-2DD4-4D2D-A1AB-62807EE9E64E\7d > tbody > tr:nth-child(2) > td.ms-stylebox > table > tbody > tr:nth-child(7) > td.ms-stylelabel{
+width: 50%;
+}
+
+
+
+
+
+
+border-radius: 5px;
+}
+
+
+.ms-pub-contentLayout {
+    background-color: rgba(255, 255, 255, 0.90);
+    display: table-cell;
+    min-width: 630px;
+	margin-top: 1px;
+    border-radius: 10px;
+}
+
+
+.ms-webpartPage-root {
+    border-spacing: 1px;
+	
+}
+
+.ms-belltown-authenticated #s4-ribbonrow, .ms-belltown-authenticated .ms-belltown-anonShow {
+    display: block;
+    height: 0px;
+}
+
+.ms-webpartzone-cell {
+	margin-top: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+    margin-left: auto;
+	border-radius: 10px;
+	padding: 5px;
+	padding-right: 30px;
+	}
+
+.ms-webpart-zone {
+    display: table;
+	padding-top: 1px;
+}
+
+.ms-webpart-zone {
+}
+
+
+.ms-pub-contentLayout {
+    background-color: rgba(255, 255, 255, 0.90);
+    display: table-cell;
+    min-width: 630px;
+    padding: 15px;
+    margin-top: 1px;
+	border-radius: 10px;
+}
+
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,600);
+body {
+  background-color: #e6e6e6;
+  font-family: 'Open Sans', sans-serif;
+}
+
+#steps {
+  width: 1505px;
+  margin: 5px;
+  background-color: #59595C;
+  border-radius: 5px;
+    box-shadow: 0px 0px 1px 0px #06060d;
+	padding: 20px;
+	border-spacing: 0px;
+}
+
+.step {
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  display: inline-block;
+  border: 4px solid;
+  border-color: transparent;
+  border-radius: 50%;
+  color: grey;
+  font-weight: 600;
+  text-align: center;
+  line-height: 35px;
+}
+
+.step:first-child {
+  line-height: 40px;
+}
+
+.step:nth-child(n+2) {
+  margin: 0 0 0 100px;
+  transform: translate(0, -4px);
+}
+
+.step:nth-child(n+2):before {
+  width: 75px;
+  height: 3px;
+  display: block;
+  background-color: white;
+  transform: translate(-95px, 21px);
+  content: '';
+  
+}
+
+.step:after {
+  width: 150px;
+  display: inline-block;
+  transform: translate(-55px, 3px);
+  color: #ffffff;
+  content: attr(data-desc);
+  font-weight: 400;
+  font-size: 13px;
+}
+
+.step:first-child:after {
+  transform: translate(-55px, -1px);
+}
+
+.step.active {
+  border-color: #73b5e8;
+  color: #73b5e8;
+  animation: neonGlow 2s infinite alternate cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    }
+@keyframes neonGlow {
+  0% {
+    box-shadow: 0 0 1px orange, 0 0 2px orange, 0 0 2px orange, 0 0 4px rgba(66, 220, 219, 0.8), 0 0 6px rgba(66, 220, 219, 0.8), 0 0 8px rgba(66, 220, 219, 0.5), 0 0 10px rgba(66, 220, 219, 0.5), 0 0 14px rgba(66, 220, 219, 0.5), 0 0 20px rgba(66, 220, 219, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.8), 0 0 8px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(66, 220, 219, 0.8), 0 0 3px rgba(66, 220, 219, 0.8), 0 0 4px rgba(66, 220, 219, 0.8), 0 0 5px rgba(66, 220, 219, 0.5), 0 0 8px rgba(66, 220, 219, 0.5);
+  }
+}
+
+
+.step.active:before {
+  background: linear-gradient(to right, #58bb58 0%, #73b5e8 100%);
+}
+
+.step.active:after {
+  color: orange;
+}
+
+.step.done {
+  background-color: #58bb58;
+  border-color: #58bb58;
+  color: white;
+}
+
+.step.done:before {
+  background-color: #58bb58;
+ }
+
+
+
+</style>
+
+<script type="text/javascript">
+
+//alert("Step1")
+
+
+var w = document.getElementById("demo1");
+var x = document.getElementById("demo2");
+var y = document.getElementById("demo3");
+var z = document.getElementById("demo4");
+var e = document.getElementById("demo5");
+var f = document.getElementById("demo6");
+var g = document.getElementById("demo7");
+var h = document.getElementById("demo8");
+var k = document.getElementById("demo9");
+var j = document.getElementById("demo10");
+
+//This little party below is th get the deal number from the url and put into a variable that I''l use after to do an api call that is filtered by it.
+
+		var phaseNumber = document.URL;
+		var strDeal = JSON.stringify(phaseNumber);
+		var dealNumber = strDeal.substr(strDeal.length-9);
+		dealNumber=dealNumber.substr(0, 8);
+		//alert(dealNumber);
+
+//This is myJSON Call
+
+
+function initializeVariables1(results){	
+var str = JSON.stringify(results);		
+//alert(str)
+for(var i=0; i<results.length; i++){
+	var result = results[i];
+	
+	var dealPhase = result["Phase"];
+
+	//alert(dealPhase);
+	
+	if(dealPhase=="Phase 1")
+	{
+	w.className="step active";		
+	}
+	
+	if(dealPhase=="Phase 2")
+	{
+	w.className="step done";
+	x.className="step active";
+	$('.done').html('<i class="icon-ok"></i>');	
+	}
+	
+	if(dealPhase=="Phase 3")
+	{
+	w.className="step done";
+	x.className="step done";
+	y.className="step active";
+	$('.done').html('<i class="icon-ok"></i>');
+	//alert("step2")
+	}
+	
+	if(dealPhase=="Phase 4")
+	{
+	w.className="step done";
+	x.className="step done";
+	y.className="step done";
+	z.className="step active";
+	$('.done').html('<i class="icon-ok"></i>');	
+	}
+	
+	if(dealPhase=="Phase 5")
+	{
+	w.className="step done";
+	x.className="step done";
+	y.className="step done";
+	z.className="step done";
+	e.className="step active";
+	$('.done').html('<i class="icon-ok"></i>');	
+	}
+	
+	if(dealPhase=="Phase 6")
+	{
+	w.className="step done";
+	x.className="step done";
+	y.className="step done";
+	z.className="step done";
+	e.className="step done";
+	f.className="step active";
+	$('.done').html('<i class="icon-ok"></i>');	
+	}
+	
+	if(dealPhase=="Phase 7")
+	{
+	w.className="step done";
+	x.className="step done";
+	y.className="step done";
+	z.className="step done";
+	e.className="step done";
+	f.className="step done";
+	g.className="step active";
+	$('.done').html('<i class="icon-ok"></i>');
+	}
+	
+	if(dealPhase=="Phase 8")
+	{
+	w.className="step done";
+	x.className="step done";
+	y.className="step done";
+	z.className="step done";
+	e.className="step done";
+	f.className="step done";
+	g.className="step done";
+	h.className="step active";
+	$('.done').html('<i class="icon-ok"></i>');	
+	}
+	
+	if(dealPhase=="Phase 9")
+	{
+	w.className="step done";
+	x.className="step done";
+	y.className="step done";
+	z.className="step done";
+	e.className="step done";
+	f.className="step done";
+	g.className="step done";
+	h.className="step done";	
+	k.className="step active";
+	$('.done').html('<i class="icon-ok"></i>');
+	}
+	
+	if(dealPhase=="Phase 10")
+	{
+	w.className="step done";
+	x.className="step done";
+	y.className="step done";
+	z.className="step done";
+	e.className="step done";
+	f.className="step done";
+	g.className="step done";
+	h.className="step done";	
+	k.className="step done";
+	j.className="step active";
+	$('.done').html('<i class="icon-ok"></i>');
+	}
+
+	if(dealPhase=="Phase 11")
+	{
+	w.className="step done";
+	x.className="step done";
+	y.className="step done";
+	z.className="step done";
+	e.className="step done";
+	f.className="step done";
+	g.className="step done";
+	h.className="step done";	
+	k.className="step done";
+	j.className="step done";
+	$('.done').html('<i class="icon-ok"></i>');
+	}	
+
+}
+
+	
+for(var i=0; i<results.length; i++){
+	var result = results[i];
+	
+
+}
+}
+function f1(){
+
+	var endPointUrl = "https://verticalbridge.sharepoint.com/teams/leasing/_api/Web/lists/GetByTitle('Leasing Deal Pipeline')/items?$filter=startswith(Title, '"+dealNumber+"')"
+	
+	 $.ajax({
+
+                   url: endPointUrl,
+
+                   method: "GET",
+
+                   headers: { "Accept":  "application/json; odata=verbose","Content-Type":"application/json; odata=verbose" },
+
+                   success: function  (data) {
+					   
+					  
+				   var results = data.d.results                     
+						
+						if(results.length > 0){
+						
+							initializeVariables1(results);
+							
+
+						}
+						
+                  },
+
+                  error: function  (data) {
+
+                      alert("Error: "+ data);
+
+                 }
+
+          }); 
+
+}
+
+f1()
+
+
+
+
+</script>

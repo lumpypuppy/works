@@ -1,0 +1,280 @@
+<input type="text" name="fname" title="Site No">
+<input type="button" onclick="returnSession()">
+<script   src="https://code.jquery.com/jquery-3.2.1.min.js"   integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="   crossorigin="anonymous"></script> 
+
+<script type="text/javascript">
+
+_spBodyOnLoadFunctionNames.push("BodyLoaded");
+function BodyLoaded(){
+
+	starSpinner();	
+
+	setReceiverForSiteInput();
+	
+	stopSpinner();
+
+
+	
+}
+
+function returnSession(){
+	
+		alert("sessionStorage.AppWeb : " + sessionStorage.AppWeb);
+		
+}
+
+function starSpinner(){
+var spinnerHTML = "<table width='100%' align='' ><tr><td><img src='https://verticalbridge.sharepoint.com/teams/development/_layouts/images/gears_an.gif'/></td></tr></table>"
+var spinnerContainer = document.createElement("div");
+spinnerContainer.id = "spinnerContainer";
+spinnerContainer.innerHTML = spinnerHTML;	
+var bodyContainer = document.getElementById("contentBox");
+bodyContainer.insertBefore(spinnerContainer, bodyContainer.childNodes[0]);
+}
+
+function stopSpinner(){
+	document.getElementById("spinnerContainer").style.display = "none";
+}
+
+
+function setReceiverForSiteInput(){
+	//alert("setReceiverForSiteInput")
+var siteNoValue = "";
+//var siteNoInput = $("div[title='Site No']");
+var siteNoInput = document.querySelectorAll("input[title='Site No']")[0]
+//alert(siteNoInput)
+if(siteNoInput){
+	siteNoInput.addEventListener("blur", siteNoBlur);
+}else{
+	alert("Failed to get Site Number input on this page")
+}
+}
+
+function siteNoBlur(){
+//alert("siteNoBlur")
+	starSpinner();	
+ this.className = this.className.replace("fontWeightBold","");	
+ siteNoValue = this.value
+ window.siteNo = siteNoValue;
+
+  //GetSiteInformation();
+  //GetSiteInformation1();
+  GetToken();
+ //GetSiteInfo(siteNoValue);
+ //alert("siteNoBlur")
+}
+
+
+
+function GetToken(){
+var data = "username=NPAdmin@verticalbridge.com&password=@Boca2017-2018&grant_type='password'";
+
+var xhr = new XMLHttpRequest();
+xhr.withCredentials = true;
+
+xhr.addEventListener("readystatechange", function () {
+  if (this.readyState === 4) {
+    console.log(this.responseText);
+  }
+});
+
+xhr.open("POST", "https://testextranet.verticalbridge.com/NodalPoint/Token");
+xhr.setRequestHeader("authorization", "Basic YWRtaW5AdGVzdC5jb206QXNkITIz");
+
+xhr.send(data);
+}
+function GetToken3(){
+var encodedUserName = encodeURIComponent("NPAdmin@verticalbridge.com");
+var encodedPassword = encodeURIComponent("@Boca2017-2018");
+	
+var settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "https://testextranet.verticalbridge.com/NodalPoint/Token",
+  "method": "POST",
+  "headers": {
+    "url": "/Token",
+    "grant_type": "'password'",
+    "authorization": "Basic YWRtaW5AdGVzdC5jb206QXNkITIz",
+    "cache-control": "no-cache",
+    "postman-token": "6124742c-92f3-3e91-f941-4e3319951226",
+    "content-type": "application/x-www-form-urlencoded"
+  },
+           error: function(result) {
+            //called when there is an error
+            alert(JSON.stringify(result));
+        },
+		          success: function(result) {
+            //called when there is an error
+            alert(JSON.stringify(result));
+        },
+  "data": {
+    "grant_type": "password",
+    "username": encodedUserName,
+    "password": encodedPassword
+  }
+}
+
+$.ajax(settings).done(function (response) {
+  alert(response);
+});
+
+}
+function GetSiteInformation1(){
+var settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "https://testextranet.verticalbridge.com/NodalPoint/GetSiteInformation?siteNo=CA-ON-1001",
+  "method": "GET",
+  "headers": {
+    "cache-control": "no-cache",
+    "postman-token": "7a5c8fcf-39aa-7916-10e4-9a74b98e887e"
+  },
+         error: function(result) {
+            //called when there is an error
+            alert(JSON.stringify(result));
+        },
+  "data": {
+    "grant_type": "password",
+    "username": "admin@test.com",
+    "password": "Asd!23"
+  }
+}
+
+$.ajax(settings).done(function (response) {
+  alert(JSON.stringify(response));
+}
+
+);
+}
+function GetSiteInformation(){
+	alert("Get site info")
+	// alert("siteNoValue : " + window.siteNo)
+//var data = "Email=NPAdmin%40verticalbridge.com&Password=%40Boca2017-2018&ConfirmPassword=%40Boca2017-2018";
+
+var xhr = new XMLHttpRequest();
+//xhr.withCredentials = true;
+
+xhr.addEventListener("readystatechange", function () {
+	alert(this.readyState);
+  if (this.readyState === 4) {
+    alert(this.responseText);
+  }
+      if (xhr.status === 200) {
+		var dsiteInfo = JSON.parse(xhr.responseText)[0]
+		alert(JSON.stringify(dsiteInfo));
+	}
+});
+
+//xhr.open("GET", "https://testextranet.verticalbridge.com/Beam/GetSiteInformation?siteNo=CA-ON-1001");
+xhr.open("GET", "https://testextranet.verticalbridge.com/NodalPoint/GetSiteInformation?siteNo=CA-ON-1001");
+
+xhr.setRequestHeader("content-type", "application/json");
+
+//xhr.send(data);
+xhr.send();
+}
+
+function GetToken2(){
+	
+	
+	var body = {
+    grant_type: 'password',
+    username: 'NPAdmin@verticalbridge.com',
+    password: '@Boca2017-2018'
+    };
+
+    $.ajax({
+        url: 'https://testextranet.verticalbridge.com/NodalPoint/Token',
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+        /* data: JSON.stringify(body), /* wrong */
+        data: body, /* right */
+        complete: function(result) {
+            //called when complete
+            alert(JSON.stringify(result));
+        },
+
+        success: function(result) {
+            //called when successful
+            alert(result);
+        },
+
+        error: function(result) {
+            //called when there is an error
+            alert(JSON.stringify(result));
+        },
+    });
+    session.isAuthenticated(true);
+    return true;
+
+	
+	
+}
+
+
+function GetToken1(){
+//alert("Getting token")
+var jwtoken = 	"YWRtaW5AdGVzdC5jb206QXNkITIz";
+
+var clientId = "NPAdmin@verticalbridge.com";
+var clientSecret = "@Boca2017-2018";
+
+alert("Getting token")
+
+//alert(window.jQuery)
+
+//var authorizationBasic = $.base64.btoa(clientId + ':' + clientSecret);
+//var authorizationBasic = b64EncodeUnicode(clientId + ':' + clientSecret);
+var authorizationBasic ="YWRtaW5AdGVzdC5jb206QXNkITIz";
+//alert(authorizationBasic);
+
+	var endPoint = "https://testextranet.verticalbridge.com/NodalPoint/Token";
+	var xhr = new XMLHttpRequest();	
+	
+	xhr.open('POST', endPoint);
+	xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+	xhr.setRequestHeader("Authorization", "Basic " + authorizationBasic);
+	xhr.setRequestHeader("Accept", "application/json");
+	xhr.setRequestHeader("grant_type", "password");
+		xhr.setRequestHeader("url", "/Token");
+	
+		
+	// xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	// xhr.setRequestHeader("grant_type", "password");
+	// xhr.setRequestHeader('Authorization', 'Basic ' + jwtoken);
+//alert(xhr.status)
+	xhr.onload = function() {
+//alert("onload")
+    if (xhr.status === 200) {
+		var responseText = JSON.parse(xhr.responseText);
+		alert(JSON.stringify(responseText));
+	}
+    else {
+        alert('Request failed.  Returned status of ' + xhr.status);
+    }
+}
+xhr.onloadend = function(){
+	alert(xhr.status + " " + JSON.stringify(xhr))
+	if(xhr.status == 0){
+		//alert("xhr.onloadend status = 0")
+	}
+}
+xhr.send();
+	
+}
+
+
+
+function b64EncodeUnicode(str) {
+    // first we use encodeURIComponent to get percent-encoded UTF-8,
+    // then we convert the percent encodings into raw bytes which
+    // can be fed into btoa.
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+        function toSolidBytes(match, p1) {
+            return String.fromCharCode('0x' + p1);
+    }));
+}
+
+</script>

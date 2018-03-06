@@ -1,0 +1,27 @@
+Phase 1
+Phase 2
+Phase 3
+Phase 4
+Phase 5
+Phase 6
+Phase 7
+Phase 8
+Phase 9
+Phase 10
+Phase 11
+
+Phase 1 Colo-App Submitted
+Phase 2 RLM-LS Reviews Colo-App
+Phase 3 RSM Reviews Colo-App
+Phase 4 Eng Reviews Colo-App
+Phase 5 POR to Tenant
+Phase 6 PO to Eng and Ops
+Phase 7 Eng. Does SA-MA
+Phase 8 Tower Mod
+Phase 9 RSM sends NTP Checklist
+Phase 10 Lease Exec and Issue NTP
+Phase 11 Deal Fully Executed
+
+
+
+=IF([Phase]="Phase 1","Colo-App Submitted",IF([Phase]="Phase 2","RLM-LS Reviews Colo-App", IF([Phase]="Phase 3","RSM Reviews Colo-App",IF([Phase]="Phase 4","Eng Reviews Colo-App",IF([Phase]="Phase 5","POR to Tenant", IF([Phase]="Phase 6","PO to Eng and Ops", IF([Phase]="Phase 7","Eng Does SA-MA", IF([Phase]="Phase 8","Tower Mod", IF([Phase]="Phase 9","RSM sends NTP Checklist", IF([Phase]="Phase 10","Lease Exec and Issue NTP", IF([Phase]="Phase 11","Deal Fully Executed",)))))))))))

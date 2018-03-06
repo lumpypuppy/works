@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<style>
+html, body, * {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	box-sizing: border-box;
+}
+* {
+	border-collapse: collapse;
+}
+html, body {
+	padding: 0;
+	margin: 0;
+	height: 100%;
+}
+html {
+	font-size: 100%;
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+}
+html, body {
+	height: 100%;
+}
+html {
+	font-size: 1em;
+}
+a {
+	text-decoration: none;
+}
+::selection {
+	background: #b3d4fc;
+	text-shadow: none;
+}
+.lbl {
+	color: #122b63;
+	color: #000000;
+	font-weight: 700;
+	white-space: nowrap;
+	padding-right: 4px;
+}
+.hoverBox {
+	background: #444444;
+	border-bottom: solid 3px #333333;
+	border-top: solid 2px #555555;
+	border-right: solid 1px #333333;
+	border-left: solid 1px #333333;
+	padding: 4px;
+	color: #f9f9f9;
+	visibility: hidden;
+	min-width: 200px;
+}
+.Heading {
+	font-size: 40px !important;
+}
+.metro div, .metro span, .metro p {
+	font-family: "Segoe UI_", "Open Sans", Verdana, Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+}
+#ctl00_ctl00_content_MainContent_SiteIDSiteName {
+	font-size: 40px !important;
+}
+#content div, #content span, #content p {
+	font-size: 12px;
+}
+#ctl00_ctl00_content_divContainer #content {
+	position: relative;
+	padding-top: 5px;
+	padding-left: 5px;
+}
+.metro div {
+	margin: 0 0 14pt;
+}
+#wrap {
+	height: 100%;
+	background-color: #fdfdfd;
+}
+html, button, input, select, textarea {
+	color: #222;
+}
+#ctl00_ctl00_content_MainContent_pnlSiteDetail .lbl {
+	color: #162c5d;
+	white-space: nowrap;
+	padding-right: 4px;
+}
+.metro a, .metro .link {
+	color: #2e92cf;
+}
+.metro a {
+	color: #162c5d;
+}
+#ctl00_ctl00_content_MainContent_pnlSiteDetail a {
+	color: #5e8886;
+}
+.metro table {
+	max-width: 100%;
+	background-color: #ffffff;
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+.metro h1, .metro h2, .metro h3, .metro h4, .metro h5, .metro h6 {
+	padding: 0;
+	margin: 10px 0;
+}
+.metro h1 {
+	font-family: "Segoe UI Light_", "Open Sans Light", Verdana, Arial, Helvetica, sans-serif;
+	font-weight: 300;
+	color: #000000;
+	letter-spacing: 0em;
+	font-size: 42pt;
+	line-height: 44pt;
+}
+#ctl00_ctl00_content_MainContent_SiteIDSiteName {
+	font-size: 40px;
+}
+</style>
+</head>
+<body class="metro"><div id="wrap"><div name="aspnetForm" id="aspnetForm" action="./SiteDetail.aspx?siteNo=CA-ON-1001" method="post"><div id="ctl00_ctl00_content_divContainer"><div class="contentWrap"><div id="content"><div><div id="ctl00_ctl00_content_MainContent_pnlSiteDetail"><div class="heading" style="clear: both;"><div style="float: left;">
+
+                <div style="clear: both;">
+                    <h1>
+                        <span class="Heading" id="ctl00_ctl00_content_MainContent_SiteIDSiteName" style="float: left;">CA-ON-1001 - TA Woodstock</span></h1>
+                    
+                    
+
+                    
+                </div>
+
+                <div style="clear: both;">
+
+                    <table align="left" style="margin: 8px 0px;" cellspacing="0" cellpadding="0" visible="true">
+                        <tbody><tr>
+                            <td style="min-width: 180px;"><span class="lbl">Site Category: </span>
+                                <span id="ctl00_ctl00_content_MainContent_lblSiteCategory">Rooftop</span></td>
+                            <td style="min-width: 180px;"><span class="lbl">Site Type: </span>
+                                <span id="ctl00_ctl00_content_MainContent_lblStructure">Retail Building</span></td>
+                            <td style="min-width: 180px;"><span class="lbl">Classification: </span>
+                                <span id="ctl00_ctl00_content_MainContent_lblClassification">Rt2Master</span></td>
+                            <td style="margin-left: 25px; min-width: 180px;"><span class="lbl" style="margin-left: 25px;">
+                                <span id="ctl00_ctl00_content_MainContent_lblOwnerNameLabel"></span></span><span id="ctl00_ctl00_content_MainContent_lblOwnerName"></span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="lbl">AGL:</span><span id="ctl00_ctl00_content_MainContent_lblAGL">21</span><span style="margin-right: 1em;"> (feet)</span></td>
+                            <td><span class="lbl">Ground Elevation:</span><span id="ctl00_ctl00_content_MainContent_lblAMSL">317</span>
+                                (feet)</td>
+                            <td><span class="lbl">Coordinates:</span>
+                                <span id="ctl00_ctl00_content_MainContent_tblCoords">
+                                    <span id="ctl00_ctl00_content_MainContent_Latitude">43.10310000</span>,&nbsp;&nbsp;<span id="ctl00_ctl00_content_MainContent_Longitude">-80.75650000</span></span>
+                                <div class="hoverBox" id="ctl00_ctl00_content_MainContent_divCoords" style="width: 130px; position: absolute;">
+                                    <span id="spnLatDMS">43° 6' 11.1594" N</span>
+                                    <br>
+                                    <span id="spnLongDMS">80° 45' 23.4" W</span>
+                                </div>
+                                
+                            </td>
+                        </tr>
+                        
+                    </tbody></table>
+
+                </div>
+
+                <div style="clear: both;">
+                    <span id="ctl00_ctl00_content_MainContent_rsmHoverTarg" style="cursor: pointer;"><span class="lbl">RSM: </span>
+                        <a class="poptext" id="ctl00_ctl00_content_MainContent_aRSM" href="http://floyd.verticalbridge.com/Search/Sirius.aspx#results=Site&amp;RSM=HHiguera">Hector Higuera</a></span>&nbsp;·&nbsp;
+				  
+                    <span id="ctl00_ctl00_content_MainContent_rlmHoverTarg" style="cursor: pointer;"><span class="lbl">RLM: </span>
+                        <a class="poptext" id="ctl00_ctl00_content_MainContent_aRLM" href="http://floyd.verticalbridge.com/Search/Sirius.aspx#results=Site&amp;RLM=Chris.Hernandez">Chris Hernandez</a></span>&nbsp;·&nbsp;
+				  
+                    <span id="ctl00_ctl00_content_MainContent_laHoverTag" style="cursor: pointer;"><span class="lbl">Leasing Specialist: </span>
+                        <a class="poptext" id="ctl00_ctl00_content_MainContent_aLA" href="http://floyd.verticalbridge.com/Search/Sirius.aspx#results=TenantLease&amp;LeaseAdmin=HHiguera">Hector Higuera</a></span>&nbsp;·&nbsp;
+				  
+                    <span id="ctl00_ctl00_content_MainContent_amHoverTag" style="cursor: pointer;"><span class="lbl">Asset Manager: </span>
+                        <a class="poptext" id="ctl00_ctl00_content_MainContent_aAssetMgr" href="http://floyd.verticalbridge.com/Search/Sirius.aspx#results=Site&amp;AssetManager=Chris.Hernandez">Chris Hernandez</a></span>&nbsp;·&nbsp;
+				  
+                    <span id="ctl00_ctl00_content_MainContent_legalHoverTag" style="cursor: pointer;"><span class="lbl">Legal: </span>
+                        <a class="poptext" id="ctl00_ctl00_content_MainContent_aLegal" href="http://floyd.verticalbridge.com/Search/Sirius.aspx#results=Site&amp;Legal=HHiguera">Hector Higuera</a></span>&nbsp;·&nbsp;
+                    
+                    <span id="ctl00_ctl00_content_MainContent_pocHoverTag" style="cursor: pointer;"><span class="lbl">Real Estate: </span>
+                        <a class="poptext" id="ctl00_ctl00_content_MainContent_aRealEstatePOC" href="http://portal.gtpsites.com/mysite/person.aspx?accountname=GTP%5CBNixon">Brian Nixon</a></span>
+                    
+                     
+                    
+
+                </div>
+
+
+            </div></div></div></div></div></div></div></div></div></body>
+</html>

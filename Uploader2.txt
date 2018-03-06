@@ -1,0 +1,668 @@
+<script type="text/javascript" src="https://verticalbridge.sharepoint.com/SiteAssets/jquery-3.1.1.min.js"></script>
+<script type="text/javascript">
+function uploadFile() {
+//alert(dDiv.innerHTML);
+var browseSelection = document.getElementById("getFile").value;
+if(!browseSelection){
+	alert("Please browse and select a file to upload first")
+	return false;
+}else{
+    var fileInput = jQuery('#getFile');
+    var getFile = getFileBuffer(fileInput);
+    getFile.done(function (arrayBuffer) {
+		var addFile = addFileToFolder(arrayBuffer);
+        addFile.done(function (file, status, xhr) {
+            var getItem = getListItem(file.d.ListItemAllFields.__deferred.uri);
+			getItem.done(function (listItem, status, xhr) {
+                var changeItem = updateListItem(listItem.d.__metadata);
+                changeItem.done(function (data, status, xhr) {
+					//document.getElementById("dSpinner").style.visibility = "hidden";
+					//var finalUpload = FinalFileUpload();
+                    //alert('File uploaded : ' + JSON.stringify(changeItem));
+					alert("File uploaded");
+					////windowClosing();
+                });
+                changeItem.fail(onError);
+            });
+            getItem.fail(onError);
+        });
+        addFile.fail(onError);
+    });
+    getFile.fail(onError);
+}
+}
+
+    function getFileBuffer1(fileInput) {
+//		var fileInput = jQuery('#getFile');
+        // var parts = fileInput[0].value.split('\\');
+        // var fileName = parts[parts.length - 1];
+		// var fileExtention = fileName.split(".")[1]
+		// var fileName = BuildDocName() + "." + fileExtention;
+		// alert("fileName : "+fileName)
+		var deferred = jQuery.Deferred();
+        var reader = new FileReader();
+		reader.onloadend = function (e) {
+			//alert("onloadend")
+           // alert("getFileBuffer1"+ e.target.result);
+			deferred.resolve(e.target.result);
+        }
+        reader.onerror = function (e) {
+			alert(e.target.error);
+        }	
+        reader.readAsArrayBuffer(fileInput[0].files[0]);
+        //alert(reader)
+		return deferred.promise();
+    }
+    function getFileBuffer2(fileInput) {
+		//alert("getFileBuffer")
+        var deferred = jQuery.Deferred();
+        var reader = new FileReader();
+		reader.onloadend = function (e) {
+			//alert("onloadend")
+            deferred.resolve(e.target.result);
+        }
+        reader.onerror = function (e) {
+            alert("onerror")
+			deferred.reject(e.target.error);
+        }
+		
+        reader.readAsArrayBuffer(fileInput[0].files[0]);
+        //alert(reader)
+		return deferred.promise();
+    }
+
+
+function GetRemoteRequestDigest1(targetSite){
+	var deferred = jQuery.Deferred();
+	var dUrl = targetSite + "/_api/contextinfo"
+	return jQuery.ajax({
+        url: dUrl,
+        type: "POST",
+        headers: { 
+            "accept": "application/json;odata=verbose",
+            "content-type": "application/json;odata=verbose",
+            "X-RequestDigest": $("#__REQUESTDIGEST").val()
+        },success: function(response){
+			deferred.resolve(response);
+		},error: function(){alert("Error retriving remote request digest.")}
+});
+//SaveFile(targetSite,targetFolderPath,requestDigest);	
+}
+
+function SaveByFolderColor() {
+//alert(uri)
+var folderColor = GetFolderColor();
+if(folderColor!='null'){
+//	var targetSite = "https://verticalbridge.sharepoint.com/sites/ld/";	
+//	var targetSite = "https://verticalbridge.sharepoint.com/sites/101/";
+	var targetSite = "https://verticalbridge.sharepoint.com/sites/101/CA-ON-1001/";
+	var targetFolderPath = "SiteDocuments/" + folderColor;
+//	var targetSiteUrl = "https://verticalbridge.sharepoint.com/sites/101/CA-ON-1001/_api/Web/GetFolderByServerRelativePath(decodedurl='SiteDocuments/Blue')"
+//			alert("Saving to remote site : " + targetFolderPath)
+	var remoteRequestDigest = GetRemoteRequestDigest1(targetSite);
+	remoteRequestDigest.done(function(response){
+		var result = response.d;	
+		var contextWebInformation = result.GetContextWebInformation;
+		var requestDigest = contextWebInformation.FormDigestValue;	
+		SaveFile(targetSite,targetFolderPath,requestDigest)
+		})
+	}else{
+		alert("Saving to Deal Documents")
+		var targetSite = "https://verticalbridge.sharepoint.com/teams/leasing/";
+		var targetFolderPath = "Deal Documents";	
+		var requestDigest = $('#__REQUESTDIGEST').val();
+		SaveFile(targetSite,targetFolderPath,requestDigest)
+}
+}
+
+function SaveFile(targetSite,targetFolderPath,requestDigest){
+			alert("requestDigest :" + requestDigest ) 
+var sourceFileName = BuildDocName();
+var fileExtention = GetFileExtention();
+var fileNameWithExtention = sourceFileName + "." + fileExtention;
+var sourceFileName = fileNameWithExtention;
+
+//alert(fileNameWithExtention)
+// var sourceSite = "https://verticalbridge.sharepoint.com/teams/leasing/";
+// var sourceFolderPath = "Uploader"
+// var sourceFileName = "D-0004563_CollocationApplication.pdf";
+// var sourceSiteUrl = sourceSite + "_api/web/GetFolderByServerRelativeUrl('" + sourceFolderPath + "')/Files('" + sourceFileName + "')/$value";
+var targetSiteUrl = targetSite + "_api/web/GetFolderByServerRelativeUrl('" + targetFolderPath + "')/Files/Add(url='" + sourceFileName + "',overwrite=true)";
+//		alert("targetSiteUrl : " + targetSiteUrl)
+var fileInput = jQuery('#getFile');
+var arrayBuffer = getFileBuffer1(fileInput);
+arrayBuffer.done(function (response) {
+//	alert("arrayBuffer : " + response)
+        $.ajax({
+            url: targetSiteUrl,
+            method: 'POST',
+            data: arrayBuffer,
+            processData: false,
+            headers: { 'binaryStringRequestBody': 'true', 'accept': 'application/json;odata=verbose;charset=utf-8', 'X-RequestDigest': requestDigest }
+        })
+            .done(function (postData) {
+                alert('Save File Succeeded');
+            })
+            .fail(function (jqXHR, errorText) {
+                alert('Error on SaveFie : ' + JSON.stringify(jqXHR));
+            });
+});
+}
+function GetFileExtention(){
+		var fileInput = jQuery('#getFile');
+        var parts = fileInput[0].value.split('\\');
+        var fileName = parts[parts.length - 1];
+		var fileExtention = fileName.split(".")[1]
+		return fileExtention;
+}
+    // Get the local file as an array buffer.
+//function copyFile(targetSiteUrl, contextId, targetFileName, targetList) {
+//https://verticalbridge.sharepoint.com/teams/leasing/Uploader/D-0004563_CollocationApplication.txt
+function GetRemoteRequestDigest(folderColor){
+alert("Saving to "+folderColor)
+var targetSite = "https://verticalbridge.sharepoint.com/sites/ld/";
+var targetFolderPath = "Destination1";
+//var requestDigest = $('#__REQUESTDIGEST').val();
+
+//alert("Saving to REmote")
+
+var targetSite = "https://verticalbridge.sharepoint.com/sites/ld/";
+var targetFolderPath = "Destination1";
+var requestDigest = $('#__REQUESTDIGEST').val();
+//SaveFile(targetSite,targetFolderPath,requestDigest)
+
+
+
+jQuery.ajax({
+        url: targetSite + "/_api/contextinfo",
+        type: "POST",
+//        data:  JSON.stringify({ '__metadata': { 'type': 'SP.List' }, 'AllowContentTypes': true,
+// 'BaseTemplate': 100, 'ContentTypesEnabled': true, 'Description': 'My list description', 'Title': 'Test' }
+//),
+        headers: { 
+            "accept": "application/json;odata=verbose",
+            "content-type": "application/json;odata=verbose",
+            //"content-length": <length of post body>,
+            "X-RequestDigest": $("#__REQUESTDIGEST").val()
+        }
+        ,success: function(response){
+//			alert("Yes "+JSON.stringify(response));
+			var result = response.d;	
+//			alert("result :"+result)
+//			alert("result "+JSON.stringify(result));			
+			var contextWebInformation = result.GetContextWebInformation;
+			var requestDigest = contextWebInformation.FormDigestValue;
+			//alert("requestDigest : "+requestDigest)
+			SaveFile(targetSite,targetFolderPath,requestDigest);
+		}
+        ,error: function(){alert("No")}
+
+});
+
+
+
+//SaveFile(targetSite,targetFolderPath,requestDigest);	
+}
+
+function GetFolderColor(){
+				var options = document.getElementById("selectDocumentType");
+				var dSelection = options[options.selectedIndex];
+		
+		if(dSelection.text != "Select Document Type"){
+		var dFolder = dSelection.getAttribute("folder");
+		}
+return dFolder;		
+}
+
+
+
+
+
+</script>
+<style type="text/css">
+.hiddenRow{
+	display:none;
+}
+#dToolbar{
+    margin-top: 80px;
+}
+#dSpinner {
+    margin-top: -100px;
+    margin-left: -80px;
+}
+.ms-webpartPage-root {
+    border-spacing: 0px;
+}
+.UploaderRow {
+    margin-bottom:15px;
+}
+#DocumentTypeDropdown{
+
+}
+#addFileButton{
+	margin-left:0px;
+}
+#DeltaPlaceHolderPageTitleInTitleArea{
+	font-size: .7em;
+}
+#contentRow {
+
+}
+#selectDocumentType{
+width: 260px;
+margin-bottom:-1px;
+}
+#uploadComment{
+height:80px;
+width: 250px;
+}
+#counter
+{
+    margin-top: -28px;
+}
+
+</style>
+<table>
+<tbody>
+<tr>
+<td class="UploaderCell">
+<div id="UploaderContent">
+<div class="UploaderRow" id="browseAndSave">
+<table>
+<tbody>
+<tr>
+<td class="UploaderCell">
+<input id="getFile" type="file" onchange="browseBoxChanged()"/>
+</td>
+<td class="UploaderCell">
+<table  id="dSpinner" visibility="hidden">
+<tbody>
+<tr><td><img src='https://verticalbridge.sharepoint.com/_layouts/images/gears_an.gif'/></td></tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="UploaderRow UploaderCell" id="DocumentTypeDropdown">
+<table>
+<tbody>
+<tr>
+<td class="UploaderCell">
+<select class="UploaderRow UploaderCell" name="Document Type" id="selectDocumentType" onchange="DocTypeSelected(this)"></select>
+</td>
+<td class="UploaderCell">
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div>
+<input type="text" style="display:none;" value="Enter a unique name" />
+</div>
+<div id="Comments">
+<table>
+<tbody>
+<tr>
+<td>
+<textarea class="UploaderCell UploaderRow" onblur="commentBoxOnBlur(this)" onfocus="commentBoxOnFocus(this)" onkeyup="textCounter(this,'counter',255);" id="uploadComment">Enter comment under 255 characters...</textarea>
+</td>
+</tr>
+<tr>
+<td>
+<input disabled  maxlength="3" size="3" value="255" id="counter">
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="UploaderRow" id="UploaderToolbar">
+<table>
+<tbody>
+<tr>
+<td class="UploaderCell">
+<input id="addFileButton" type="button" value="Save" onclick="uploadFile()"/>
+</td>
+<td class="UploaderCell">
+<input id="cancelButton" type="button" value="Cancel" onclick="cancelUpload()"/>
+</td>
+<td>
+<input id="tryButton" type="button" value="Try" onclick="uploadFile()"/>
+</td>
+
+</tr>
+</tbody>
+</table>
+</div>
+<div class="UploaderRow" id="displayNameHidden">
+</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+
+<script type="text/javascript">
+//alert("Heartbeat!")
+'use strict';
+    // Add the file to the file collection in the Shared Documents folder.
+
+function commentBoxOnBlur(dBox){
+if ( dBox.value == "" ) {
+ dBox.value = "Enter comment under 255 characters...";
+ }
+}
+function commentBoxOnFocus(dBox){
+if ( dBox.value == "Enter comment under 255 characters..." ) {
+ dBox.value = "";
+ }
+}
+
+function textCounter(field,field2,maxlimit)
+{
+ var countfield = document.getElementById(field2);
+ 
+ if ( field.value.length > maxlimit ) {
+  field.value = field.value.substring( 0, maxlimit );
+  return false;
+ } else {
+  countfield.value = maxlimit - field.value.length;
+ }
+}
+
+
+_spBodyOnLoadFunctionNames.push("BodyLoaded");
+function BodyLoaded(){
+var dSpinner = document.getElementById("dSpinner");
+dSpinner.style.visibility = "visible";
+GetDocumentTypes();
+//dSpinner.style.visibility = "hidden";
+}
+
+function browseBoxChanged(){
+document.getElementById("DocumentTypeDropdown").style.visibility = "visible"
+}
+
+function DoneLoading(){
+document.getElementById("dSpinner").style.visibility = "hidden";
+}
+
+function GetDealNumber(){
+	var windowLocation =  window.location.toString();
+//	alert(window.location.toString());
+	   var dealNumberPresent =  window.location.toString().indexOf("DealNumber=") > -1
+	 if(dealNumberPresent){
+	  var dDealNumber = window.location.toString().split("DealNumber=")[1].replace("%2D","-").substring(0,9);
+	   //alert(dDealNumber)
+	  return dDealNumber;
+	 }else{
+			alert("No Leasing Deal Number available on the url for tagging this document.")
+		  }
+	}
+
+function BuildDocName(dSelection){
+		if(!dSelection){
+				var options = document.getElementById("selectDocumentType");
+				var dSelection = options[options.selectedIndex];
+		}
+		if(dSelection.text == "Select Document Type"){
+			alert("Please select a Document Type");
+			return false;
+		}
+		var docType = dSelection.text;
+		var dFolder = dSelection.getAttribute("folder");
+		var dealNumber = GetDealNumber();
+		var docTypeNoSpaces = docType.replace(" ","").replace(" ","").replace(" ","").replace(" ","").replace(" ","");
+		var docName = "";
+		if(dFolder=="null"){
+		  docName = dealNumber + "_" + docTypeNoSpaces;
+ 		}else{
+		  docName = dealNumber + "_" + docTypeNoSpaces + "_SiteNumberPendingDeployment";	
+		}
+		document.querySelectorAll("#DeltaPlaceHolderPageTitleInTitleArea")[0].innerHTML = "Uploading " + docName;
+		//alert("Document will be saved as : " + docName);
+		return docName;
+}
+function DocTypeSelected(options){
+ 	 var dSelection = options[options.selectedIndex];
+	 BuildDocName(dSelection);
+	}
+
+function tryButton1(){
+//	alert("truButton")
+	GetDocumentTypes();
+}
+function LoadDocumentTypes(docTypes){
+	//alert(docTypes.length)
+		var options = "<option value=-1 folder=null >Select Document Type</option>";
+		for(var docType in docTypes){
+			options += "<option value=" + docType + " folder="+ docTypes[docType].Folder_x0020_Color + ">" + docTypes[docType].Title + "</option>"
+		}
+//		alert(options)
+		document.getElementById("selectDocumentType").innerHTML = options;
+		DoneLoading();
+}
+
+function GetDocumentTypes(){
+//alert("GetContentTypes");
+var endPoint = "https://verticalbridge.sharepoint.com/teams/leasing/_api/web/lists/getbytitle('Document Types')/items";
+//var endPoint = "https://verticalbridge.sharepoint.com/teams/leasing/_api/web/lists/getbytitle('Library1')/items?$filter=(Deal_x0020_Number eq '"+itemID+"') and (Document_x0020_Type eq 'CollocationApplication')";
+var xhr = new XMLHttpRequest();
+xhr.open('GET', endPoint, true);
+xhr.setRequestHeader("accept", "application/json;odata=verbose");
+xhr.onload = function() {
+    if (xhr.status === 200) {
+		var dResponseText = JSON.parse(xhr.responseText);
+		var docTypes = dResponseText.d.results;
+		LoadDocumentTypes(docTypes);
+	}
+    else {
+        alert('Request failed.  Returned status of ' + xhr.status);
+    }
+}
+xhr.onloadend = function(){
+	if(xhr.status == 0){
+	  alert("xhr.status : " + xhr.status)
+	}
+}
+xhr.send();
+}
+
+
+function RemoveDistractions(){
+////Removing Save and Cancel bottons;	
+//	var listFormToolBarTop = document.getElementById("listFormToolBarTop");
+//	var contentRow = document.getElementById("contentRow");
+//document.getElementById("s4-ribbonrow").style.display = "none";
+//document.getElementById("sideNavBox").style.display = "none";	
+//document.getElementById("DeltaSuiteLinks").style.display = "none";
+//document.getElementById("contentBox").style.marginLeft = "22px";
+
+}
+
+function windowClosing(){
+//	alert("windowClosing");
+//alert(window.dealNumber)
+if(window.dealNumber){
+//	SetInputValues();
+var keyLable = window.dealNumber + "DocName";
+//localStorage.setItem(keyLable,window.docName);
+var keyValue = window.docType + "," + window.docName
+localStorage.setItem(keyLable,keyValue);
+//alert("Sender keyLable : " + keyLable + " Sender content : "+localStorage.getItem(keyLable))
+	}
+						window.close();	
+}
+
+function updateDocumentName(){
+	var documentType = document.querySelectorAll("select[title='Document Type']")[0] !=null ? document.querySelectorAll("select[title='Document Type']")[0] : alert("Failed to get Document Type box on this form.");
+//alert("documentType : "+documentType)
+	var selectedDocumentType = documentType.options[documentType.selectedIndex].text;
+//alert("selectedDocumentType"+selectedDocumentType);	
+	var docTypeNoSpaces = selectedDocumentType.replace(/ /g,'');
+//alert(docTypeNoSpaces)
+	var revisionNumberInput = document.querySelectorAll("input[title='Rev Number']")[0] !=null ? document.querySelectorAll("input[title='Rev Number']")[0] : alert("Failed to get Rev Number box on this form.");
+	var revisionNumber = revisionNumberInput.value;
+	//	var revisionNumber = revisionNumberInput.value != "" ? revisionNumberInput.value : "0";	
+//	alert(window.docName)
+//	var docExtension = document.querySelectorAll(".ms-fileField-fileExt")[0].innerHTML;
+	var docOriginalName = document.getElementById("getFile").value;
+	var docExtension = docOriginalName.substring(docOriginalName.lastIndexOf("."));
+//	alert(docExtension)
+//	window.docTitle = docName + docExtension;
+
+	window.docType = selectedDocumentType;
+
+////If no revision number entered leave the file name alone 
+if(revisionNumber == ""){
+	window.docName = window.dealNumber + "_" + docTypeNoSpaces + docExtension;
+}else{	
+	window.docName = window.dealNumber + "_" + docTypeNoSpaces + "_Rev" + revisionNumber + docExtension;
+}
+
+	 ////Updating Title and Name
+	 document.getElementById("displayName").value = window.docName;
+	 var inputName = "Title";
+	 var dInput = document.querySelectorAll("input[title='"+inputName+"']")[0] !=null ? document.querySelectorAll("input[title='"+inputName+"']")[0] : alert("Failed to get input "+ inputName);
+	 dInput.value = window.docName.split(".")[0];
+
+	 var inputName = "Name Required Field";
+	 var dInput = document.querySelectorAll("input[title='"+inputName+"']")[0] !=null ? document.querySelectorAll("input[title='"+inputName+"']")[0] : alert("Failed to get input "+ inputName);	
+	 dInput.value = window.docName;
+//alert("Saving " + window.docName);
+//return true;
+}
+    function addDataToField(inputName,inputData) {
+	var dInput = document.querySelectorAll("input[title='"+inputName+"']")[0] !=null ? document.querySelectorAll("input[title='"+inputName+"']")[0] : alert("14Failed to get input box "+ inputName);
+		if(dInput){
+			dInput.value = inputData;
+		}
+	}
+	
+	function selectDropDown(ddTitle,dValue){
+	var selectElement = document.querySelectorAll("select[title='"+ddTitle+"']")[0] !=null ? document.querySelectorAll("select[title='"+ddTitle+"']")[0] : alert("15Failed to get input box "+ inputName);
+	if(selectElement){
+	 selectElement.options[selectElement.selectedIndex].value = dValue;
+	 selectElement.options[selectElement.selectedIndex].textContent = dValue;	
+	}
+	}
+	
+
+
+function cancelUpload(){
+window.close();
+}
+
+// Upload the file.
+// You can upload files up to 2 GB with the REST API.
+
+
+    // Get the local file as an array buffer.
+    function getFileBuffer(fileInput) {
+		//alert("getFileBuffer")
+        var deferred = jQuery.Deferred();
+        var reader = new FileReader();
+		reader.onloadend = function (e) {
+			//alert("onloadend")
+            deferred.resolve(e.target.result);
+        }
+        reader.onerror = function (e) {
+            alert("onerror")
+			deferred.reject(e.target.error);
+        }
+		
+        reader.readAsArrayBuffer(fileInput[0].files[0]);
+        //alert(reader)
+		return deferred.promise();
+    }
+
+    // Add the file to the file collection in the Shared Documents folder.
+    function addFileToFolder(arrayBuffer) {
+	    var serverUrl = _spPageContextInfo.webAbsoluteUrl;
+		var serverRelativeUrlToFolder = 'Uploader';
+		var fileInput = jQuery('#getFile');
+        // Get the file name from the file input control on the page.
+        var parts = fileInput[0].value.split('\\');
+        var fileName = parts[parts.length - 1];
+		var fileExtention = fileName.split(".")[1]
+		var fileName = BuildDocName() + "." + fileExtention;
+        // Construct the endpoint.
+        var fileCollectionEndpoint = String.format(
+                "{0}/_api/web/getfolderbyserverrelativeurl('{1}')/files" +
+                "/add(overwrite=true, url='{2}')",
+                serverUrl, serverRelativeUrlToFolder, fileName);
+				
+				//alert(fileCollectionEndpoint)
+				
+        // Send the request and return the response.
+        // This call returns the SharePoint file.
+        return jQuery.ajax({
+            url: fileCollectionEndpoint,
+            type: "POST",
+            data: arrayBuffer,
+            processData: false,
+            headers: {
+                "accept": "application/json;odata=verbose",
+                "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
+                "content-length": arrayBuffer.byteLength
+            }
+        });
+    }
+
+    // Get the list item that corresponds to the file by calling the file's ListItemAllFields property.
+    function getListItem(fileListItemUri) {
+
+        // Send the request and return the response.
+        return jQuery.ajax({
+            url: fileListItemUri,
+            type: "GET",
+            headers: { "accept": "application/json;odata=verbose" }
+        });
+    }
+
+    // Change the display name and title of the list item.
+    function updateListItem(itemMetadata) {
+	//	alert("updateListItem " + itemMetadata)
+	
+	var dealNumber = GetDealNumber();
+	var newName = BuildDocName();
+	var uploadComment = document.getElementById("uploadComment").innerHTML;
+	uploadComment = uploadComment != "Enter comment under 255 characters..." ? uploadComment : "";
+ //   alert("uploadComment"+uploadComment)
+	var body = String.format("{{'__metadata':{{'type':'{0}'}},'FileLeafRef':'{1}','Title':'{2}','Deal_x0020_Number':'{3}','Upload_x0020_Comment':'{4}'}}",itemMetadata.type, newName, newName,dealNumber,uploadComment);	
+	//alert("body : "+body+" | jQuery('#__REQUESTDIGEST').val() : " + jQuery("#__REQUESTDIGEST").val() + "| itemMetadata.etag : " + itemMetadata.etag + "| body.length : "+body.length+"| url: itemMetadata.uri :" + itemMetadata.uri)
+	
+        return jQuery.ajax({
+            url: itemMetadata.uri,
+            type: "POST",
+            data: body,
+            headers: {
+                "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
+                "content-type": "application/json;odata=verbose",
+                "content-length": body.length,
+                "IF-MATCH": itemMetadata.etag,
+                "X-HTTP-Method": "MERGE"
+            }
+			//,success: function(data){UploadByFolderColor(itemMetadata.uri)}
+			,success: function(data){SaveByFolderColor()}
+			,error: function(request, status, error){alert("error 1:" + request.responseText)}
+			
+        });
+    }
+
+
+// Display error messages. 
+function onError(error) {
+	var dError = error.responseText;
+	if(dError.indexOf("The specified name is already in use.")>-1){
+	//document.getElementById("dSpinner").style.visibility = "hidden";
+    alert("Document exist. Please select different document type or revision number");
+//	getFile = null;
+	}
+}
+
+
+</script>
+
+

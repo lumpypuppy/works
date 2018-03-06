@@ -1,0 +1,65 @@
+
+<script  type="text/javascript" src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<link  type="text/css" rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css" /> 
+<script type="text/javascript" src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script> 
+
+<script type="text/javascript" src="//www.markrackley.net/scripts/jquery.HillbillyTabify.min.js?rev=1"></script> 
+
+<div id="HillbillyTabifyDiv"><ul id="HillbillyTabify"></ul></div>
+<!-- <!DOCTYPE html>
+<html>
+<body>
+
+<button onclick="myFunction()">Colo-App</button>
+
+</body>
+</html>
+<style>
+#WebPartWPQ3 > div.ms-rtestate-field > button {
+    min-width: 6em;
+    padding: 7px 10px;
+    border: 1px solid #ABABAB;
+    background-color: #FDFDFD;
+    background-color: rgba(242, 203, 29, 1);
+    margin: 10px;
+    font-family: "Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif;
+    font-size: 11px;
+    color: #444;
+    border-radius: 5px;
+}
+</style> -->
+
+<script type="text/javascript">
+
+	/* function myFunction() {
+		
+		var url = window.coloAppUrl;
+		
+		var newwindow=window.open(url,'_blank','height=640,width=1200');
+		if (window.focus){
+		 newwindow.focus()
+		}
+		return false;
+	} */
+    jQuery(document).ready(function($) {
+	
+		/* var grabTheElement = document.querySelectorAll("#scriptWPQ4");
+		var replaceTheElement = grabTheElement[0].querySelectorAll("a");
+		var thisOuterHtml = replaceTheElement[8].outerHTML !=null ? replaceTheElement[8].outerHTML: "";
+		var webAddress = thisOuterHtml.toString();
+		var newWebAddress=webAddress.substring(337, 384); 
+		newWebAddress="https://verticalbridge.sharepoint.com/teams/leasing/Deal%20Documents/"+newWebAddress;
+		window.coloAppUrl = newWebAddress; */
+		//alert(newWebAddress);
+        var tabInfo = [
+            {title:"Deal Basic Info",size:21},
+            {title:"Deal Team",size:4},
+            {title:"Details",size:19},
+			{title:"Engineering Services",size:43}
+        ];
+            
+        HillbillyTabifyForms(tabInfo);
+       
+    });
+
+</script>

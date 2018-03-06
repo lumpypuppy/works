@@ -1,0 +1,36 @@
+<script type="text/javascript">
+'use strict';
+//alert("Hearbit")
+
+_spBodyOnLoadFunctionNames.push("BodyLoaded");
+function BodyLoaded(){
+var ldNumber = getLDNumber();
+//alert(ldNumber)
+tagDealNumber();
+}
+
+function getLDNumber(){
+//	var windowLocation =  window.location.toString();
+//	alert(window.location.toString());
+	  var ldNumberPresent =  window.location.toString().indexOf("LDN=") > -1
+	if(ldNumberPresent){
+	  var urlldNumber = window.location.toString().split("LDN=")[1].replace("%2D","-").substring(0,9);
+	  return urlldNumber;
+	}else{
+        var sessionldNumber = sessionStorage.ldNumber;
+		 if(sessionldNumber){
+			return sessionldNumber;
+		 }else{
+			alert("No Leasing Deal Number (LDN) available for tagging this document.")
+		}
+	}	
+	}
+	
+function tagDealNumber(){
+	var dnBox = document.querySelectorAll("input[title='Deal Number']")[0]
+	//alert(dnBox)
+	var ldNumber = getLDNumber();
+	dnBox.value = ldNumber;
+}	
+
+</script>

@@ -1,0 +1,9 @@
+<style>
+.contentwrapper {
+    margin: 20px 5% 20px 5%;
+    margin-left: 15px;
+    min-width: 921px;
+}
+
+</style>
+

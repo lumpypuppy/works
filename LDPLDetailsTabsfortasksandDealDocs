@@ -1,0 +1,62 @@
+<script type="text/javascript" src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="//code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script> 
+<script type="text/javascript" src="//cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js"></script> 
+<script type="text/javascript" src="//www.markrackley.net/scripts/jquery.HillbillyTabs.2013.js"></script> 
+
+
+<link  type="text/css" rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css" /> 
+
+<div id="tabsContainer"></div>
+
+<style> 
+#ManualRefresh {
+    display: block;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: url(https://verticalbridge.sharepoint.com/teams/development/SiteAssets/Refresh30x30.jpg) no-repeat;
+    width: 30px;
+    height: 60px;
+    padding-left: 30px;
+    position: relative;
+    top: 65px;
+}
+
+</style>
+
+<script type="text/javascript">
+
+	
+	
+
+     jQuery(document).ready(function($) {
+		
+		var grabTheElement = document.querySelectorAll("#scriptWPQ4");
+		
+		var replaceTheElement = grabTheElement[0].querySelectorAll("a");
+		
+		for (i = 0; i < replaceTheElement.length; i++) {
+				var thisOuterHtml = replaceTheElement[i].outerHTML !=null ? replaceTheElement[i].outerHTML: "";
+				
+		 if(thisOuterHtml.indexOf("_self")>-1)
+		 {	
+			$(function(){ $('[target]').attr('target', '_blank'); });
+
+		 }
+		
+		
+		}
+		
+		//Put 2 web parts in 2 different tabs
+        //var webPartTitles = ["Tasks","Deal Documents"];
+        //HillbillyTabs(webPartTitles);
+
+        //Create a Tab with Two Web Parts, and a second tab with one Web Part
+		//var webPartTitles = ["Tasks";"Documents;#Deal Documents;#Upload"];
+        //HillbillyTabs(webPartTitles);
+     
+        //Put all web parts (that have visible titles) in current zone into tabs 
+       HillbillyTabs();
+
+  
+    });
+</script>

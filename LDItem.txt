@@ -1,0 +1,1083 @@
+
+<script type="text/javascript" src="/_layouts/15/clientpeoplepicker.js"></script>
+<script type="text/javascript" src="https://verticalbridge.sharepoint.com/SiteAssets/jquery-3.1.1.min.js"></script>
+<script type="text/javascript">
+
+// function GetColloApp(){
+// var dealNumber = document.querySelectorAll("input[title='Deal Number']")[0].value;
+// //alert(dealNumber)
+// //var endPoint = "http://portal.verticalbridge.com/_vti_bin/VerticalBridge.Services.SPHostedServices/WorkflowDataService/QuasarService.svc/GetNextMasterNumber(Deal%20Number)";
+// // var endPoint = "https://beam.verticalbridge.com/GetMasterNumber/Deal Number";
+// //var endPoint = "https://verticalbridge.sharepoint.com/teams/leasing/_api/web/lists/getbytitle('Deal Documents')/items?$filter=(Deal_x0020_Number eq '"+dealNumber+"') and (Document_x0020_Type eq 'CollocationApplication')";
+// //var endPoint = "https://testextranet.verticalbridge.com/Beam/GetMasterNumber/Deal%20Number";
+
+// var endPoint = "https://verticalbridge.sharepoint.com/teams/leasing/_api/web/lists/getbytitle('Deal Documents')/items?$filter=(Deal_x0020_Number eq 'D-002872')";
+
+// var xhr = new XMLHttpRequest();
+// xhr.open('GET', endPoint);
+// xhr.onload = function() {
+// alert("onload")
+    // if (xhr.status === 200) {
+		        // alert('Response :' + xhr.responseText)
+// //		var dDealNumber = JSON.parse(xhr.responseText)
+ // //       alert('Response : ' + dDealNumber);
+    // //FormatForm(dDealNumber,1);
+	// }
+    // else {
+        // alert('Request failed.  Returned status of ' + xhr.status);
+    // }
+// }
+// xhr.onloadend = function(){
+	// alert(xhr.status)
+	// if(xhr.status == 0){
+		// alert(xhr.status)
+	// }
+// }
+// xhr.send();
+
+// }
+function SiteValidated(dSiteInfo){
+	//alert("SiteValidated")
+	//alert(dSiteInfo.SiteNo);
+	var siteNoInput = document.querySelectorAll("input[title='Site No']")[0]
+	siteNoInput.value = dSiteInfo.SiteNo;
+	var portfolioInput = document.querySelectorAll("input[title='Portfolio Name']")[0]
+	portfolioInput.value = dSiteInfo.PortfolioName;
+
+	var structureTypeInput = document.querySelectorAll("input[title='Structure Type']")[0]
+	structureTypeInput.value = dSiteInfo.StructureDescription;
+
+	var siteNameInput = document.querySelectorAll("input[title='Site Name']")[0]
+	siteNameInput.value = dSiteInfo.SiteName;
+
+	var docsForInput = document.querySelectorAll("input[title='SiteDocUrl']")[0]
+	docsForInput.value = dSiteInfo.DocumentURL;
+
+	var currentClasses = siteNoInput.className;
+	siteNoInput.className = currentClasses + " fontWeightBold";
+	var attachColoApp = document.getElementById("addDocBtn");
+	var attachColoAppClasses = attachColoApp.getAttribute("class");
+	//alert(attachColoAppClasses)
+	attachColoApp.disabled = false;
+	attachColoApp.setAttribute("class", attachColoAppClasses + " btnEnable");
+
+	//alert(" Going to CheckLeaseTeam" + leaseTeam);
+	CheckLeaseTeam(dSiteInfo);
+}
+function checkViewDealDetailLink(dealNumber){
+//	alert("checkViewDealDetailLink for deal  : "+ dealNumber);
+	var viewDealDetailsRow = document.getElementById("View_x0020_Deal_x0020_Details").parentNode.parentNode;
+	var viewDealDetailsUrl = viewDealDetailsRow.querySelectorAll("input")[0]
+	var viewDealDetailsLabel = viewDealDetailsRow.querySelectorAll("input")[1]
+	if(viewDealDetailsLabel.value == ""){
+		viewDealDetailsUrl.value = "https://verticalbridge.sharepoint.com/teams/leasing/SitePages/LD%20Details.aspx?DealNumber=" + dealNumber;
+		viewDealDetailsLabel.value = "View Deal Details";
+	}else{
+		//alert("View Deal Details link already present")
+	}
+}
+function CheckLeaseTeam(leaseTeam){
+	//alert("CheckLeaseTeam");
+	var teamFields = ["Leasing Manager","Leasing Specialist","Site Manager","Asset Manager"];
+	var teamPerson = [leaseTeam.RLM,leaseTeam.LeasingAdministrator,leaseTeam.RSM,leaseTeam.AssetManager];
+	for(var i=0;i<teamFields.length;i++){
+		var fieldName = teamFields[i];
+	var fieldValue = GetValue(fieldName);
+	//   alert(fieldName + " = " + fieldValue);
+	   if(!fieldValue){
+		   	  // alert(fieldName + " is blank ");
+			   SetAndResolvePeoplePicker(fieldName, teamPerson[i]);
+	   }
+	}
+}
+
+function InitializeForm(){
+	//alert("InitializeForm")
+	////Determine if we are on a New or Edit item form.
+	 var dNumber = document.querySelectorAll("input[title='Deal Number']") !=null ? document.querySelectorAll("input[title='Deal Number']")[0].value : false;
+	 if(dNumber){
+		//alert("This is an Edit Item form for "+dNumber);
+		document.getElementById("titleWithId").innerHTML = "Editing Leasing Deal ";
+	//alert("This is an Edit Item form for "+dNumber);
+		////FormatForm(dNumber,form type : New = 1, Edit = 2);
+		FormatForm(dNumber,2);
+	}else{
+		//alert("This is a New Item form");
+		document.getElementById("titleWithId").innerHTML = "New Leasing Deal ";
+		GetDNumber();
+	}
+	setReceiverForRelationShipName();
+
+			    setReceiverForSiteInput();
+
+	checkForCCO();
+
+	checkForDealType();
+
+	checkForAdditionalItems();
+
+}
+function setReceiverForSiteInput(){
+	//alert("setReceiverForSiteInput")
+var siteNoValue = "";
+//var siteNoInput = $("div[title='Site No']");
+var siteNoInput = document.querySelectorAll("input[title='Site No']")[0]
+//alert(siteNoInput)
+if(siteNoInput){
+	siteNoInput.addEventListener("blur", siteNoBlur);
+}else{
+	alert("Failed to get Site Number input on this page")
+}
+}
+
+function siteNoBlur(){
+//alert("siteNoBlur")
+ this.className = this.className.replace("fontWeightBold","");
+ siteNoValue = this.value
+ window.siteNo = siteNoValue;
+ //alert("siteNoValue : " + window.siteNo)
+ GetSiteInfo(siteNoValue);
+
+ var extControl = siteNoInput.closest("table").parent().closest("tr").children('td').eq(1);
+	extControl.hide();
+}
+function GetSiteInfo(siteNo){
+//alert("GetSiteInfo")
+
+if(siteNo){
+//var endPoint = "https://beam.verticalbridge.com/GetSiteInformation?siteNo=" + siteNo;
+var endPoint = "https://testextranet.verticalbridge.com/Beam/GetSiteInformation?siteNo=" + siteNo;
+//var endPoint = "https://extranet.verticalbridge.com/Beam/GetSiteInfo/" + siteNo;
+
+//alert(endPoint)
+
+var xhr = new XMLHttpRequest();
+xhr.open('GET', endPoint);
+xhr.onload = function() {
+//alert("onload")
+    if (xhr.status === 200) {
+		var dsiteInfo = JSON.parse(xhr.responseText)[0]
+		console.log(JSON.stringify(dsiteInfo));
+		if(!dsiteInfo){
+			alert("Site not found. Please check the number and try again");
+			return false;
+		}
+
+
+		var dSiteNo = dsiteInfo.SiteNo;
+
+    //alert('Response : ' + dSiteNo);
+		if(dSiteNo.toLowerCase() == siteNo.toLowerCase()){
+			//alert("dSiteNo == siteNo")
+			SiteValidated(dsiteInfo);
+		}
+	}
+    else {
+        alert('Request failed.  Returned status of ' + xhr.status);
+    }
+}
+xhr.onloadend = function(){
+//	alert(xhr.status)
+	if(xhr.status == 0){
+		//alert("xhr.onloadend status = 0")
+	}
+}
+xhr.send();
+}else{
+//FormatForm("TD-000001",1);
+}
+}
+function isElementEmpty(elementType,elementTitle,dMessageLable){
+alert("isElementEmpty -- "+"elementType : "+elementType+", elementTitle : " + elementTitle + ", dMessageLable : " + dMessageLable)
+	var testedElement = document.querySelectorAll("" + elementType + "[title='"+elementTitle+"']")[0]
+	//alert(testedElement)
+	return false;
+	var dElement = testedElement !=null ? testedElement : alert("Failed to get "+elementTitle+" on this form.");
+	var dElementRow = getParentElement(dElement,"tr");
+	if(dElement && dElementRow.style.display != "none"){
+	if(elementType == "select"){
+		var selectElementValue = dElement.options[dElement.selectedIndex].text;
+		if(selectElementValue == "(None)"){
+			alert(dMessageLable);
+			return true;
+		}
+	}
+	if(elementType == "input"){
+		var selectElementValue = dElement.value;
+		if(selectElementValue == "(None)"|| selectElementValue == ""){
+			alert(dMessageLable);
+			return true;
+		}
+	}
+		if(elementType == "div"){
+		var selectElementValue = dElement.innerHTML;
+		if(selectElementValue == "(None)"|| selectElementValue == ""){
+			alert(dMessageLable);
+			return true;
+		}
+	}
+	}
+}
+
+
+function PreSaveItem(){
+if(validateForm()){
+return true;
+}
+}
+
+
+function starSpinner(){
+var spinnerHTML = "<table width='100%' align='' ><tr><td><img src='https://verticalbridge.sharepoint.com/teams/development/_layouts/images/gears_an.gif'/></td></tr></table>"
+var spinnerContainer = document.createElement("div");
+spinnerContainer.id = "spinnerContainer";
+spinnerContainer.innerHTML = spinnerHTML;
+var bodyContainer = document.getElementById("contentBox");
+bodyContainer.insertBefore(spinnerContainer, bodyContainer.childNodes[0]);
+//document.getElementById("mainContent").parentNode.parentNode.parentNode.appendChild(spinnerContainer);
+//document.getElementById("spinnerContainehttps://verticalbridge.sharepoint.com/teams/development/SitePages/Home.aspx#r").style.display = "none";
+}
+
+function doneLoading(){
+	//alert("Stopping spinner.")
+	var dContainer = document.getElementById("part1").parentNode;
+	var newForm = document.getElementById("newPart1");
+	var dHeader = document.getElementById("titleWithId");
+	dContainer.insertBefore(newForm,dContainer.childNodes[0]);
+	dContainer.insertBefore(dHeader,dContainer.childNodes[0]);
+
+	document.getElementById("spinnerContainer").style.display = "none";
+	document.getElementById("DeltaPlaceHolderMain").style.visibility = "visible";
+}
+
+function validateForm(){
+	var fieldsToValidate = {
+	//0:{type:"select",title:"InitialTerm",message:"Please input Initial Term before saving this item"},
+	1:{type:"select",title:"Deal Type",message:"Please select a Deal Type before saving this item"},
+	3:{type:"select",title:"Deal Source",message:"Please select a Deal Source before saving this item"},
+	4:{type:"input",title:"Tenant Legal Name",message:"Please enter a Tenant Legal Name before saving this item"},
+	5:{type:"select",title:"Tenant Type",message:"Please select a Tenant Type before saving this item"},
+	6:{type:"select",title:"Relationship Name",message:"Please select a Relationship Name before saving this item"},
+	7:{type:"select",title:"Site No",message:"Please enter a valid Site Number before saving this item"},
+
+	51:{type:"select",title:"Leasing Manager",message:"A Leasing Manager is required before saving this item"},
+	52:{type:"select",title:"Leasing Specialist",message:"A Leasing Specialist is required before saving this item"},
+	53:{type:"select",title:"Site Manager",message:"A Site Manager is required before saving this item"},
+	54:{type:"select",title:"Asset Manager",message:"A Asset Manager is required before saving this item"},
+
+	}
+
+for(fieldToValidate in fieldsToValidate){
+ var field = fieldsToValidate[fieldToValidate];
+ //var elementEmpty = isElementEmpty(field.type,field.title,field.message);
+ var elementVisible = ElementRowVisible(field.title);
+  if(elementVisible){
+   var elementEmpty = GetValue(field.title) == "";
+   if(elementEmpty){
+//alert("elementEmpty:" + elementEmpty);
+   alert(field.message)
+   return false;
+ }
+ }
+}
+ var siteNoBox = document.querySelectorAll("input[title='Site No']")[0]
+ var dClasses = siteNoBox.className;
+ if(dClasses.indexOf("fontWeightBold") < 0 ){
+	 alert("A valid Site Number is expected before saving this form.")
+	 return false;
+ }
+		return true;
+}
+function ElementRowVisible(fieldName){
+	 var elementID = fieldName.replace(" ","_x0020_").replace(" ","_x0020_").replace(" ","_x0020_").replace(" ","_x0020_").replace(" ","_x0020_")
+	 //alert(elementID)
+	 var dElement = document.getElementById(elementID);
+	 //alert(dElement)
+	if(dElement){
+	 var dElementDisplay = dElement.parentNode.parentNode.style.display;
+	 var dElementGroup = dElement.parentNode.parentNode.getAttribute("group")
+	 //alert(dElementGroup)
+	 var dGroupTable = document.querySelectorAll("table[group='" + dElementGroup + "']")[0]
+	if(dGroupTable.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.style.display =="none"){
+		return null;
+	}else{
+		return true;
+	}
+	}
+}
+
+function GetValue(fieldName){
+	var dValue;
+	//alert("Getting value for " + fieldName)
+		var ppDiv = document.querySelectorAll("div[title='" + fieldName + "']")[0]
+		if(ppDiv){
+			var isApp = ppDiv.getAttribute("SPClientPeoplePicker")=="true"
+			if(isApp){
+			var rootNode = 	ppDiv.parentNode.parentNode;
+			var entity = rootNode.querySelectorAll(".ms-entity-resolved")[0];
+			if(entity){
+				return entity.getAttribute("Title")
+			}
+			}
+		}
+
+	var fieldTypes = ["input","select"];
+
+ for(var i=0;i<fieldTypes.length;i++){
+		var fieldType = fieldTypes[i];
+//	alert("GetValue for : "+fieldName+ " as required field with field type of " + fieldType )
+
+		dValue = GetValueForRequired(fieldName,fieldType);
+	if(dValue !=null){
+//		alert("fieldType "+ fieldType);
+		if(dValue=="(None)"){return ""}else{return dValue}f
+		}else{
+//	alert("GetValue for : "+fieldName+ " as NO required field with field type of " + fieldType )
+	dValue = GetValueForNoRequired(fieldName,fieldType);
+	if(dValue !=null){
+		if(dValue=="(None)"){return ""}else{return dValue}
+	}
+	}
+	}
+
+	if(dValue !=null){return dValue}else{
+		alert("Failed to get " + fieldName + " on this page.");
+	}
+}
+
+function GetValueForRequired(fieldName,fieldType){
+	var inputBox = document.querySelectorAll(""+fieldType+"[title='" + fieldName + " Required Field']")[0]
+	 var dValue = inputBox != null ? inputBox.value : null
+	return dValue;
+	}
+function GetValueForNoRequired(fieldName,fieldType){
+	var inputBox = document.querySelectorAll(""+fieldType+"[title='" + fieldName + "']")[0]
+	var dValue = inputBox != null ? inputBox.value : null
+	return dValue;
+	}
+function TagRows(dRows,formType){
+//alert("fieldToKeep on formType = "+formType);
+//// All forms = onlyon:0, New = onlyon:1, Edit = onlyon:2
+var fieldsToKeep = {
+11:{name:"Deal Type",group:1,order:1},
+12:{name:"Deal Source",group:1,order:2},
+13:{name:"Tenant Legal Name",group:1,order:3},
+14:{name:"Tenant Type",group:1,order:4},
+15:{name:"Relationship Name",group:1,order:5,newname:"Relationship Name"},
+16:{name:"Site No",group:1,order:6,newname:"VB Site Number",width:130},
+17:{name:"Portfolio Name",group:1,order:7},
+18:{name:"Site Name",group:1,order:8, newname:"VB Site Name",width:130},
+
+20:{name:"Tenant Contact Email",group:2,order:1},
+21:{name:"Anchor",group:2,order:2},
+22:{name:"Inquiry Date",group:2,order:3},
+23:{name:"Deal Status",group:2,order:4},
+24:{name:"Fully Executed Date",group:2,order:5,newname:""},
+25:{name:"Projected Monthly Rent",group:2,order:6},
+26:{name:"Est Closure Date",group:2,order:7},
+27:{name:"Reporting Month",group:2,order:8,newname:""},
+28:{name:"Reporting Year",group:2,order:9,newname:""},
+
+//31:{name:"InitialTerm",group:3,order:1,newname:"Initial Term"},
+32:{name:"Renewals",group:3,order:2,newname:"Number of Renewals"},
+33:{name:"TermRenewals",group:3,order:3,newname:"Renewals Terms(Months)"},
+
+40:{name:"Leasing Manager",group:4,order:1, newname:"Regional Leasing Manager"},
+41:{name:"Leasing Specialist",group:4,order:2, newname:"Regional Leasing Specialist"},
+42:{name:"Site Manager",group:4,order:3, newname:"Regional Site Manager"},
+43:{name:"Asset Manager",group:4,order:4},
+
+51:{name:"Stage",group:5,order:1,newname:"Workflow Stage",readonly:"true"},
+52:{name:"Legal Review",group:5,order:2,newname:""},
+53:{name:"Signed Deal",group:5,order:3,newname:""},
+54:{name:"Requires Land Lord Approval",group:5,order:4,newname:""},
+55:{name:"Actual Fabrication Completed",group:5,order:5,newname:""},
+56:{name:"Projected Fabrication Completed",group:5,order:6,newname:""},
+57:{name:"Actual Construction Start",group:5,order:7,newname:""},
+58:{name:"Actual Construction Complete",group:5,order:8,newname:""},
+59:{name:"Actual Post Mod Inspection",group:5,order:9,newname:""},
+60:{name:"Projected Post Mod Inspection",group:5,order:10,newname:""},
+61:{name:"Projected Construction Start",group:5,order:11,newname:""},
+62:{name:"Projected Construction Complete",group:5,order:12},
+63:{name:"Monthly Rent",group:5,order:13,newname:""},
+64:{name:"Amendment Number",group:1,order:7},
+65:{name:"Revision",group:1,order:9},
+//66:{name: "SiteDocUrl", group:5,order:1},
+67:{name: "Initial Term (Months)", group:5,order:2},
+68:{name: "Renewals", group:5,order:3},
+69:{name: "Term of Renewals (Months)", group:5,order:4},
+70:{name: "Structure Type", group:5,order:5, newname:"Site Type"},
+71:{name: "Carrier Site Name", group:1,order:5, newname:"Carrier Site Name"},
+72:{name: "Carrier Site Number", group:1,order:5, newname:"Carrier Site Number"},
+
+
+};
+//alert(dRows.length);
+for(var i=0;i<dRows.length;i++){
+ var dRowIsToKeep = 0;
+	 var thisRow = dRows[i];
+	 var thisRowHeaderElement = thisRow.querySelectorAll(".ms-standardheader")[0]
+	 var thisRowHeader = thisRowHeaderElement !=null ? thisRowHeaderElement.querySelectorAll("nobr")[0].innerHTML : null;
+
+	if(thisRowHeader){
+	 var thisRowTitle = thisRowHeader.indexOf("span") > 0 ? thisRowHeader.split("<span")[0] : thisRowHeader;
+ 	// alert("Row : " + i + " Title : " + thisRowTitle)
+
+		 //alert(thisRowTitle)
+
+	for(field in fieldsToKeep){
+		var fieldObject = fieldsToKeep[field];
+		var fieldName = fieldObject.name;
+//			if(fieldObject.onlyon == formType || !fieldObject.onlyon){
+						 if(thisRowTitle == fieldName){
+							//alert(thisRowTitle)
+							dRowIsToKeep = 1;
+							thisRow.setAttribute("group",fieldObject.group);
+							thisRow.setAttribute("order",fieldObject.order);
+							var newName = fieldObject.newname;
+							 if(newName){
+								 if(thisRowHeader.indexOf("required") > 0){
+									 var newName = newName + '<span title="This is a required field." class="ms-accentText"> *</span>'
+								 }
+							 thisRowHeaderElement.innerHTML = newName;
+							 }
+							var newWidth = fieldObject.width;
+							if(newWidth){
+								var newWidth = newWidth.toString() + "px";
+								var thisRowInput = thisRow.querySelectorAll("input")[0]
+								if(thisRowInput){
+									thisRowInput.style.width = newWidth
+								}
+							}
+						}
+//			}
+	}
+	}else{
+		//alert(i + " Row without header detected.")
+	}
+	 if(dRowIsToKeep==0){
+		 thisRow.style.display = "none";
+	 }
+}
+}
+
+
+function getParentElement(el,selector){
+    while (el) {
+	if (el.tagName.toLowerCase() == selector.toLowerCase()) {
+            return el;
+        }
+        el = el.parentElement;
+    }
+}
+
+
+//alert("heartbit")
+function test(){
+alert("test")
+            var dispTitle = "Site Manager";
+            var pickerDiv = $("[id^='PeoplePickerInternalName'][title='" + dispTitle + "']");
+
+
+            var peoplePicker = SPClientPeoplePicker.SPClientPeoplePickerDict[pickerDiv[0].id];
+            peoplePicker.OnUserResolvedClientScript = function GetData(pickerDiv) {
+
+               $("input[id^='field1']").val(peoplePicker.GetAllUserInfo()[0].EntityData.Email);
+               $("input[id^='field2']").val(peoplePicker.GetAllUserInfo()[0].DisplayText);
+
+            }
+
+        }
+_spBodyOnLoadFunctionNames.push("BodyLoaded");
+function BodyLoaded(){
+
+if(window.location.toString().toLowerCase().indexOf("?siteno=") > -1){
+//	alert("Now Getting The Site Number");
+ var siteNo = window.location.toString().split("SiteNo=")[1].substring(0,10);
+// alert(siteNo)
+var siteNoInput = document.querySelectorAll("input[title='Site No']")[0].value = siteNo;
+}
+
+					//SP.SOD.executeFunc('https://verticalbridge.sharepoint.com/_layouts/15/clientpeoplepicker.js', 'SP.ClientContext', false);
+
+	// SP.SOD.executeFunc("https://verticalbridge.sharepoint.com/_layouts/15/clientpeoplepicker.js","SP.ClientContext",function(){
+           // setTimeout(function(){
+           // test();
+           // },2000);
+	// });
+
+
+//	alert("BodyLoaded");
+if(window.location.toString().toLowerCase().indexOf("webpartpage") > -1){
+	alert("Now in Editing mode. Code cancelled");
+	document.getElementById("DeltaPlaceHolderMain").style.visibility = "visible";
+	return false;
+}else{
+	starSpinner();
+//alert("Running code");
+}
+//alert("InitializeForm")
+InitializeForm();
+}
+
+function checkForCCO(){
+	//alert("Checking for CCO")
+if(window.siteNo){
+	var last3Chars = window.siteNo.substring(7);
+	var isnum = /^\d+$/.test(last3Chars);
+	 if(!isnum){
+		 document.getElementById("newPart1").rows[3].style.display = "block";
+	 }else{
+		 document.getElementById("newPart1").rows[3].style.display = "none";
+	 }
+}else{
+		 document.getElementById("newPart1").rows[3].style.display = "none";
+}
+}
+
+function checkForAdditionalItems(){
+if(window.siteNo){
+		 document.getElementById("newPart1").rows[5].style.display = "block";
+	 }else{
+		 document.getElementById("newPart1").rows[5].style.display = "none";
+	 }
+}
+
+function setReceiverForRelationShipName(){
+	 var selectName = "Relationship Name";
+	 var dSelect = document.querySelectorAll("select[title='"+selectName+"']")[0] !=null ? document.querySelectorAll("select[title='"+selectName+"']")[0] : alert("Failed to get select box "+ selectName);
+	 if(dSelect){
+	  dSelect.addEventListener("change", function(){
+	  checkForRelationShipName(this);
+	 });
+ }
+}
+    function clearUsers(FieldName){  //Clears all existing users from PP
+        var ppDiv = $("[id$='ClientPeoplePicker'][title='" + FieldName + "']"); //Find div with the name
+		var ppEditor = ppDiv.find("[title='" + FieldName + "']"); //narrow down to input with name
+        var spPP = SPClientPeoplePicker.SPClientPeoplePickerDict[ppDiv[0].id]; //get the instance of the peoplepicker from the dictionary
+        var current = spPP.GetAllUserInfo(); //get current users
+        current.forEach(function(index){ //delete current users
+            spPP.DeleteProcessedUser(current[index]);
+        });
+    }
+function SetAndResolvePeoplePicker(FieldName, Person){  //Sets this user exclusively
+        var ppDiv = $("[id$='ClientPeoplePicker'][title='" + FieldName + "']"); //Find div with the name
+		var ppEditor = ppDiv.find("[title='" + FieldName + "']"); //narrow down to input with name
+		var spPP = SPClientPeoplePicker.SPClientPeoplePickerDict[ppDiv[0].id]; //get the instance of the peoplepicker from the dictionary
+        var current = spPP.GetAllUserInfo(); //get current users
+        current.forEach(function(index){ //delete current users
+            spPP.DeleteProcessedUser(current[index]);
+        });
+        ppEditor.val(Person) // Set the value
+        spPP.AddUnresolvedUserFromEditor(true); //resolve name
+    }
+function checkForRelationShipName(dSelect){
+	var selectElementValue = dSelect.options[dSelect.selectedIndex].text;
+	var users = {RLM:"Gary Hess",LS:"Mindy Fields"}
+	if(selectElementValue.toLowerCase().indexOf("broadcast")>-1){
+	var broadcastRLMpresent = document.querySelectorAll("a[title='Remove person or group " + users.RLM + "']");
+	var broadcastLSpresent  = document.querySelectorAll("a[title='Remove person or group " + users.LS  + "']");
+
+	if(broadcastLSpresent.length < 1){
+		clearUsers('Leasing Manager');
+		SetAndResolvePeoplePicker('Leasing Manager', users.RLM)
+		}
+		if(broadcastRLMpresent.length < 1){
+		clearUsers('Leasing Specialist');
+		SetAndResolvePeoplePicker('Leasing Specialist', users.LS)
+		}
+	}
+	else
+	{
+		if(broadcastLSpresent.length > 0){
+			$("a[id*=LeasingManager]").click();
+		}
+		if(broadcastRLMpresent.length > 0){
+			$("a[id*=LeasingSpecialist]").click();
+		}
+
+		siteNumberAlreadyExist = window.siteNo;
+		if(siteNumberAlreadyExist){
+		getUsersFromFloyd(window.siteNo);
+		}
+	}
+
+
+}
+
+
+
+function GetDNumber(){
+//alert("GetDNumber")
+var notATest = true;
+if(notATest){
+//var endPoint = "http://portal.verticalbridge.com/_vti_bin/VerticalBridge.Services.SPHostedServices/WorkflowDataService/QuasarService.svc/GetNextMasterNumber(Deal%20Number)";
+// var endPoint = "https://beam.verticalbridge.com/GetMasterNumber/Deal Number";
+var endPoint = "https://testextranet.verticalbridge.com/Beam/GetMasterNumber/Deal%20Number";
+//var endPoint = "https://extranet.verticalbridge.com/Beam/GetMasterNumber/Deal%20Number";
+
+
+var xhr = new XMLHttpRequest();
+xhr.open('GET', endPoint);
+xhr.onload = function() {
+//alert("onload")
+    if (xhr.status === 200) {
+		var dDealNumber = JSON.parse(xhr.responseText)
+        //alert('Response : ' + dDealNumber);
+		window.dealNumber = dDealNumber;
+    FormatForm(dDealNumber,1);
+	}
+    else {
+        alert('Request failed.  Returned status of ' + xhr.status);
+    }
+}
+xhr.onloadend = function(){
+	//alert(xhr.status)
+	if(xhr.status == 0){
+		FormatForm("TD-000000",1);
+	}
+}
+xhr.send();
+}else{
+FormatForm("TD-000001",1);
+}
+}
+
+function FormatForm(dealNumber,formType){
+	 //alert("Deal number : " + dealNumber + ". Form type : " + formType)
+	 ////FormatForm(dealNumber,formType 1=New, 2=Edit)
+
+	    checkViewDealDetailLink(dealNumber)
+		var siteNo = document.querySelectorAll("input[title='Site No']")[0].value;
+		//alert(siteNo)
+		GetSiteInfo(siteNo)
+
+
+
+   	    if(formType == 1){
+			document.querySelectorAll("input[title='Deal Number']")[0].value = dealNumber;
+		}
+		//alert("FormatForm " + dealNumber + ". Form Type : "+formType)
+		var currentTitle = document.getElementById("titleWithId");
+		////Add id to form title
+		currentTitle.innerHTML = currentTitle.innerHTML + dealNumber;
+		////Remove the top cancel button
+		var topCancelButton = document.querySelectorAll("input[value='Cancel']")[0]
+		topCancelButton.style.display = "none";
+		///Move top save button to the right
+		var topCancelButton = document.querySelectorAll("input[value='Save']")[0]
+		 topCancelButton.style.position = "absolute";
+		 topCancelButton.style.top = "130px";
+		 topCancelButton.style.left = "-200px";
+		{
+}
+		var itemsGroups = document.querySelectorAll(".ItemsGroup")
+
+		var dTable = document.getElementById("part1").querySelectorAll(".ms-formtable")[0]
+		if(dTable){
+			 dRows = dTable.rows;
+			// alert("Rows : " + dRows.length);
+			 //alert(dRows[0].innerHTML)
+			 TagRows(dRows,formType);
+			//alert(itemsGroups.length)
+	 		for(var i=0; i < itemsGroups.length; i++){
+			var itemsGroup = itemsGroups[i];
+			//alert(itemsGroup);
+			var dGroupFields = [];
+			var itemsGroupNumber = itemsGroup.getAttribute("group");
+			//alert(itemsGroupNumber)
+			var dGroupItems = dTable.querySelectorAll("tr[group='" + itemsGroupNumber + "']")
+				if(dGroupItems.length > 0){
+				 //alert(dGroupItems.length)
+				 for(var j =0; j<dGroupItems.length; j++){
+					 var thisRow = dGroupItems[j];
+					 dGroupFields.push(thisRow);
+				 }
+				}
+
+			// //alert(dGroupItems.length)
+			sortGroupAndAddToTable(dGroupFields,itemsGroup)
+			}
+		}else{
+			alert("Failed to locate fields when formatting this form.")
+		}
+
+doneLoading();
+}
+
+
+
+function MatchRowWithField(dRow,fieldName){
+	//alert("MatchRowWithField")
+	alert(fieldName)
+	var isInput = (dRow.querySelectorAll("input[title='"+ fieldName +"']")).length > 0
+	if(isInput){
+		return true;
+	}else{
+	var nobr = dRow.querySelectorAll("nobr")[0];
+			var thisNobrLabel = nobr.innerHTML;
+			alert(thisNobrLabel)
+				var isANobr = ( thisNobrLabel == fieldName);
+				var isANobr = thisNobrLabel.indexOf(fieldName) > -1;
+				if(isANobr){
+					return true;
+				}
+	}
+}
+
+function sortGroupAndAddToTable(group,table){
+	dGroup = group;
+dTableBody = table;
+
+var newGroupOrder = [];
+
+for(var i=0;i < dGroup.length;i++){
+var thisRowIndex = dGroup[i].getAttribute("order");
+newGroupOrder.push(thisRowIndex);
+}
+newGroupOrder.sort(compareNumbers);
+
+for(var i=0;i<newGroupOrder.length;i++){
+  var dIndex = newGroupOrder[i];
+	for(var j=0;j<dGroup.length;j++){
+		thisRow = dGroup[j];
+		thisRowIndex = thisRow.getAttribute("order");
+		if(thisRowIndex == dIndex){
+			//alert(dIndex);
+			dTableBody.appendChild(thisRow);
+		}
+	}
+  }
+}
+
+function compareNumbers(a, b) {
+  return a - b;
+}
+
+function popitup() {
+	var currentList = window.location.pathname.split("/")[3];
+	//alert("currentList = " + currentList)
+if(currentList.toLowerCase() == "leasingdealpipeline"){
+//alert("Attaching document to deal "+window.dealNumber)
+//			var url = "http://portal.verticalbridge.com/Leasing/CollocationApplications/Forms/NewFile.aspx?$&DealNumber=" + window.dealNumber + "&SiteNo=" + window.siteNo
+			 ////If this is a new item then preset document type as collocation application.
+			 if(window.currentForm == 1){
+			  //var url = "http://portal.verticalbridge.com/Leasing/Deal%20Documents/Forms/EditForm.aspx?DealParams&DealNumber="+ window.dealNumber +"&SiteNo=" + window.siteNo + "&DocType=Collocation%20Application"
+//			  var url = "http://portal.verticalbridge.com/Leasing/CollocationApplications/Forms/NewFile.aspx?DealParams&DealNumber="+ window.dealNumber +"&SiteNo=" + window.siteNo + "&DocType=Collocation%20Application";
+//			  var url = "https://verticalbridge.sharepoint.com/teams/leasing/TD%20Documents/Forms/Upload.aspx?DealParams&DealNumber="+ window.dealNumber +"&SiteNo=" + window.siteNo + "&DocType=Collocation%20Application";
+			  var url = "https://verticalbridge.sharepoint.com/teams/leasing/SitePages/Uploader.aspx?DealNumber="+ window.dealNumber + "&DocType=Collocation%20Application";
+			 }else{
+				// var url = "http://portal.verticalbridge.com/Leasing/CollocationApplications/Forms/NewFile.aspx?$&DealNumber=" + window.dealNumber + "&SiteNo=" + window.siteNo
+//				var url = "http://portal.verticalbridge.com/Leasing/CollocationApplications/Forms/NewFile.aspx?DealParams&DealNumber="+ window.dealNumber +"&SiteNo=" + window.siteNo;
+//				var url = "https://verticalbridge.sharepoint.com/teams/development/TD%20Documents/Forms/Upload.aspx?DealParams&DealNumber="+ window.dealNumber +"&SiteNo=" + window.siteNo;
+				//alert("step1")
+				var url = "https://verticalbridge.sharepoint.com/teams/leasing/SitePages/Uploader.aspx?DealNumber="+ window.dealNumber;
+
+				}
+			}else{
+							//alert("step2")
+//				   var url = "https://verticalbridge.sharepoint.com/teams/development/TD%20Documents/Forms/Upload.aspx?$&DealNumber=" + window.dealNumber + "&SiteNo=" + window.siteNo
+				   var url = "https://verticalbridge.sharepoint.com/teams/leasing/SitePages/Uploader.aspx?DealNumber=" + window.dealNumber + "&SiteNo=" + window.siteNo;
+//alert("url: "+ url)
+				   }
+		var newwindow=window.open(url,'_blank','height=640,width=1200');
+		if (window.focus){
+		 newwindow.focus()
+		}
+		return false;
+}
+
+</script>
+
+<style type="text/css">
+
+</style>
+
+
+<span>
+<p class="GroupHeader" id="titleWithId" style='color: rgb(77, 77, 77); font-family: Times New Roman, "Georgia", Times, serif; font-size: 36px;'>Leasing Deal</p>
+</span>
+
+<table id="newPart1" style="width: 900px;" cellspacing="0">
+<tbody>
+
+<tr style="background-color: rgb(77, 77, 77);">
+<td id="topHeaderBar" style="height: 25px; ">
+<table class="ColloAppButton" id="ColloAppBtnTable" style="width: 900px;" cellspacing="0">
+<tbody>
+<tr>
+<td>
+<button disabled id="addDocBtn" class="button" onClick="return popitup();">Attach ColloApp</button>
+</td>
+</tr>
+</tbody>
+</table>
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+<table class="GroupTable" style="width: 900px;" cellspacing="0">
+<tbody>
+<caption>
+<p class="GroupHeader" style='color: rgb(77, 77, 77); font-family: Georgia, "Times New Roman", Times, serif; font-size: x-large; font-weight: bold;'>Required Items</p>
+</caption>
+<tr style="background-color: rgb(77, 77, 77);"><td colspan="2" class="divisionLine"></td><td></td></tr>
+<tr class="topSpacer"></tr>
+<tr>
+<td>
+<table class="ItemsGroup" group=1>
+<tbody id="group1">
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+
+</td>
+</tr>
+
+
+<tr>
+<td>
+
+<table class="GroupTable"   style="width: 900px;" cellspacing="0">
+<tbody>
+<caption>
+<p class="GroupHeader" style='color: rgb(77, 77, 77); font-family: Georgia, "Times New Roman", Times, serif; font-size: x-large; font-weight: bold;'>Deal Details</p>
+</caption>
+<tr style="background-color: rgb(77, 77, 77);"><td colspan="2" class="divisionLine"></td><td></td></tr>
+<tr class="topSpacer"></tr>
+<tr>
+<td>
+<table class="ItemsGroup" group=2>
+<tbody id="group2">
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+
+</td>
+</tr>
+
+<tr>
+<td>
+
+<table class="GroupTable"  style="width: 900px;" cellspacing="0">
+<tbody>
+<caption>
+<p class="GroupHeader" style='color: rgb(77, 77, 77); font-family: Georgia, "Times New Roman", Times, serif; font-size: x-large; font-weight: bold;'>CCO Billboards</p>
+</caption>
+<tr style="background-color: rgb(77, 77, 77);"><td colspan="2" class="divisionLine"></td><td></td></tr>
+<tr class="topSpacer"></tr>
+<tr>
+<td>
+<table class="ItemsGroup" group=3>
+<tbody id="group3">
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+
+</td>
+</tr>
+
+
+<tr>
+<td>
+
+<table class="GroupTable"  style="width: 900px;" cellspacing="0">
+<tbody>
+<caption>
+<p class="GroupHeader" style='color: rgb(77, 77, 77); font-family: Georgia, "Times New Roman", Times, serif; font-size: x-large; font-weight: bold;'>Leasing Deal Team</p>
+</caption>
+<tr style="background-color: rgb(77, 77, 77);"><td colspan="2" class="divisionLine"></td><td></td></tr>
+<tr class="topSpacer"></tr>
+<tr>
+<td>
+<table class="ItemsGroup" group=4>
+<tbody id="group4">
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+
+</td>
+</tr>
+
+
+<tr>
+<td>
+
+<table class="GroupTable" style="width: 900px;" cellspacing="0">
+<tbody>
+<caption>
+<p class="GroupHeader" style='color: rgb(77, 77, 77); font-family: Georgia, "Times New Roman", Times, serif; font-size: x-large; font-weight: bold;'>Additional Items</p>
+</caption>
+<tr style="background-color: rgb(77, 77, 77);"><td colspan="2" class="divisionLine"></td><td></td></tr>
+<tr class="topSpacer"></tr>
+<tr>
+<td>
+<table class="ItemsGroup" group=5>
+<tbody id="group5">
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script> -->
+
+<style type="text/css">
+#listFormToolBarTop{
+	display:block!important;
+position:absolute;
+top: 50px;
+}
+
+#contentRow{
+marging-top:35px;
+}
+#s4-ribbonrow{
+}
+
+
+.enableAddDocBtn{
+color: green;
+}
+
+
+.attachmentName{
+	font-size: 18px;
+}
+.attachmentName:link {color: #444; text-decoration: underline; }
+ .attachmentName:active {color: #444; text-decoration: underline; }
+ .attachmentName:visited {color: #444; text-decoration: underline; }
+ .attachmentName:hover {color: rgba(140, 191, 38, 1); text-decoration: none; }
+
+.DocsHeader{
+	text-align:left;
+}
+.AuthorCell{
+	text-align:left;
+}
+
+#topHeaderBar{
+	background-color:rgba(51, 152, 51, 1);
+}
+#onetidinfoblock1, #onetidinfoblock2{
+	position:relative;
+	left:-650px;
+}
+#DeltaPlaceHolderMain{
+visibility:hidden;
+}
+
+#newPart1 table td:nth-child(1) {
+    font-size:18px;
+}
+#newPart1 table td:nth-child(2) {
+    padding-left: 50px;
+}
+
+.ms-toolbar {
+    position: relative;
+    left: 650px;
+}
+
+
+.divisionLine{
+   height:.5px;
+}
+.topSpacer {
+    height: 22px;
+}
+
+.hiddenRow{
+display:none;
+}
+
+#table6 {
+	width:845px;
+	margin-left:25px;
+}
+#table6 th {
+    padding: 21px 0px 22px 0px;
+    border-top: 1px solid #fafafa;
+    border-bottom: 1px solid #e0e0e0;
+    background: rgba(217, 217, 217, 1);
+    background: -webkit-gradient(linear, left top, left bottom, from(rgba(217, 217, 217, 1)), to(#ebebeb));
+    background: -moz-linear-gradient(top,  #ededed,  #ebebeb);
+}
+#table6 td {
+	padding-top: 7px;
+}
+#table6 th:nth-child(1), #table6 td:nth-child(1) {
+    width: 40%;
+}
+#table6 th:nth-child(2), #table6 td:nth-child(2) {
+    width: 35%;
+}
+#table6 th:nth-child(3), #table6 td:nth-child(3) {
+    width: 30%;
+}
+#table6 t2:nth-child(1){
+    padding-left:10px;;
+}
+
+#table6 th:nth-child(1){
+    padding-left:10px;;
+}
+#table6 th:nth-child(2){
+    padding-left:50px;;
+}
+#table6 th:nth-child(3){
+    padding-left:5px;;
+}
+#Ribbon.ListForm.Edit-title{
+	display:none;
+}
+#Ribbon.ListForm.Edit{
+	display:none;
+}
+.GroupHeader{
+    color: rgb(77, 77, 77);
+    font-family: Georgia, "Times New Roman", Times, serif;
+    font-size: x-large;
+    font-weight: bold;
+    text-align: left;
+}
+.fontWeightBold{
+	font-weight: bold;
+}
+#ColloAppBtnTable{
+    margin-top: -111px;
+}
+#addDocBtn {
+	margin-left: 650px;
+    font-size: 16px;
+    height: 76px;
+    width: 160px;
+
+}
+.btnEnable{
+	color:green!important;
+	disable:false;
+
+}
+</style>

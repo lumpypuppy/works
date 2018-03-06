@@ -1,0 +1,26 @@
+<script  type="text/javascript" src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<link  type="text/css" rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css" /> 
+<script type="text/javascript" src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script> 
+
+<script type="text/javascript" src="//www.markrackley.net/scripts/jquery.HillbillyTabify.min.js?rev=1"></script> 
+
+<div id="HillbillyTabifyDiv"><ul id="HillbillyTabify"></ul></div>
+
+<script type="text/javascript">
+
+    jQuery(document).ready(function($) {
+        //the example below creates 3 tabs, you can create as many tabs as you'd like by adding additional objects.
+        //"Title" is the title of the tab and "size" is the number of fields to show in that tab
+        //If there are any remaining fields they will appear as normal below the tabs
+        var tabInfo = [
+            {title:"Deal Basic Info",size:21},
+            {title:"Deal Team",size:4},
+            {title:"Details",size:17},
+			{title:"Engineering Services",size:39}
+        ];
+            
+        HillbillyTabifyForms(tabInfo);
+        
+    });
+
+</script>

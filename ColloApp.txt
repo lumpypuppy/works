@@ -1,0 +1,286 @@
+<html>
+
+<script type="text/javascript" src="https://verticalbridge.sharepoint.com/SiteAssets/jquery-3.1.1.min.js"></script>
+<!-- Example of form similar to Razor (ASP MVC) -->
+<form id="myForm">
+    <div class="form-group">
+        <label>Name</label>
+        <input type="text" name="Customer.FullName" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>e-mail</label>
+        <input type="text" name="Customer.Email" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label>Payment</label>
+        <select name="Payment" class="form-control">
+            <option value="">Select payment...</option>
+            <option value="1">Credit Card</option>
+            <option value="2">Cash</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Credit Card Company</label>
+        <select name="CreditCardCompany" multiple class="form-control">
+            <option value="Company A">Company A</option>
+            <option value="Company B">Company B</option>
+            <option value="Company C">Company C</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>New Customer?</label>
+        <div class="radio">
+            <label>
+                <input type="radio" name="IsNewCustomer" value="True" /> Yes
+            </label>
+            <label>
+                <input type="radio" name="IsNewCustomer" value="False" /> No
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Marketing: </label>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" name="ReceiveEmailPartner" value="true" /> You agree to receive e-mail partner?
+                <input type="hidden" name="ReceiveEmailPartner" value="false" />
+            </label>
+            <label>
+                <input type="checkbox" name="ReceiveSMSPartner" value="true" /> You agree to receive SMS partner?
+                <input type="hidden" name="ReceiveSMSPartner" value="false" />
+            </label>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" value="54457" name="Product[0].ID" class="number" /></td>
+                <td><input type="text" value="Smartphone" name="Product[0].Name" /></td>
+                <td><input type="text" value="5" name="Product[0].Quantity" class="number" /></td>
+                <td><input type="text" value="1,054.99" name="Product[0].Cost" class="money" /></td>
+            </tr>
+            <tr>
+                <td><input type="text" value="97518" name="Product[1].ID" class="number" /></td>
+                <td><input type="text" value="iPad" name="Product[1].Name" /></td>
+                <td><input type="text" value="3" name="Product[1].Quantity" class="number" /></td>
+                <td><input type="text" value="2,119.99" name="Product[1].Cost" class="money" /></td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<button onclick="sayIt();return false">GO</button>
+<script>
+
+
+
+    "use strict";
+
+
+
+    function sayIt() {
+
+        $.fn.serializeToJSON = function (options) {
+
+            var f = {
+                settings: $.extend(true, {}, $.fn.serializeToJSON.defaults, options),
+
+                getValue: function ($input) {
+                    var value = $input.val();
+
+                    if ($input.is(":radio")) {
+                        value = $input.filter(":checked").val() || null;
+                    }
+
+                    if ($input.is(":checkbox")) {
+                        value = $($input).prop('checked');
+                    }
+
+                    if (this.settings.parseBooleans) {
+                        var boolValue = (value + "").toLowerCase();
+                        if (boolValue === "true" || boolValue === "false") {
+                            value = boolValue === "true";
+                        }
+                    }
+
+                    var floatCondition = this.settings.parseFloat.condition;
+                    if (floatCondition !== undefined && (
+                        (typeof (floatCondition) === "string" && $input.is(floatCondition)) ||
+                        (typeof (floatCondition) === "function" && floatCondition($input)))) {
+
+                        value = this.settings.parseFloat.getInputValue($input);
+                        value = Number(value);
+
+                        if (this.settings.parseFloat.nanToZero && isNaN(value)) {
+                            value = 0;
+                        }
+                    }
+
+                    return value;
+                },
+
+                createProperty: function (o, value, names, $input) {
+                    var navObj = o;
+
+                    for (var i = 0; i < names.length; i++) {
+                        var currentName = names[i];
+
+                        if (i === names.length - 1) {
+                            var isSelectMultiple = $input.is("select") && $input.prop("multiple");
+
+                            if (isSelectMultiple && value !== null) {
+                                navObj[currentName] = new Array();
+
+                                if (Array.isArray(value)) {
+                                    $(value).each(function () {
+                                        navObj[currentName].push(this);
+                                    });
+                                }
+                                else {
+                                    navObj[currentName].push(value);
+                                }
+                            } else {
+                                navObj[currentName] = value;
+                            }
+                        } else {
+                            var arrayKey = /\[\w+\]/g.exec(currentName);
+                            var isArray = arrayKey != null && arrayKey.length > 0;
+
+                            if (isArray) {
+                                currentName = currentName.substr(0, currentName.indexOf("["));
+
+                                if (this.settings.associativeArrays) {
+                                    if (!navObj.hasOwnProperty(currentName)) {
+                                        navObj[currentName] = {};
+                                    }
+                                } else {
+                                    if (!Array.isArray(navObj[currentName])) {
+                                        navObj[currentName] = new Array();
+                                    }
+                                }
+
+                                navObj = navObj[currentName];
+
+                                var keyName = arrayKey[0].replace(/[\[\]]/g, "");
+                                currentName = keyName;
+                            }
+
+                            if (!navObj.hasOwnProperty(currentName)) {
+                                navObj[currentName] = {};
+                            }
+
+                            navObj = navObj[currentName];
+                        }
+                    }
+                },
+
+                includeUncheckValues: function (selector, formAsArray) {
+                    $(":radio", selector).each(function () {
+                        var isUncheckRadio = $("input[name='" + this.name + "']:radio:checked").length === 0;
+                        if (isUncheckRadio) {
+                            formAsArray.push({
+                                name: this.name,
+                                value: null
+                            });
+                        }
+                    });
+
+                    $("select[multiple]", selector).each(function () {
+                        if ($(this).val() === null) {
+                            formAsArray.push({
+                                name: this.name,
+                                value: null
+                            });
+                        }
+                    });
+                },
+
+                serializer: function (selector) {
+                    var self = this;
+
+                    var formAsArray = $(selector).serializeArray();
+                    this.includeUncheckValues(selector, formAsArray);
+
+                    var serializedObject = {}
+
+                    $.each(formAsArray, function (i, item) {
+                        var $input = $(":input[name='" + item.name + "']", selector);
+
+                        var value = self.getValue($input);
+                        var names = item.name.split(".");
+
+                        self.createProperty(serializedObject, value, names, $input);
+                    });
+
+                    return serializedObject;
+                }
+            };
+
+            return f.serializer(this);
+        };
+
+        $.fn.serializeToJSON.defaults = {
+            associativeArrays: true,
+            parseBooleans: true,
+            parseFloat: {
+                condition: undefined,
+                nanToZero: true,
+                getInputValue: function ($input) {
+                    return $input.val().split(",").join("");
+                }
+            }
+        };
+
+        var obj = $("#myForm").serializeToJSON({
+            parseFloat: {
+                condition: ".number,.money"
+            }
+        });
+
+        //alert(obj.Customer.FullName)
+        //  alert(obj)
+        //  alert(JSON.stringify(obj))
+        //  alert(obj.Customer.FullName)
+
+
+        var endPoint = "https://testextranet.verticalbridge.com/Beam/GetSiteInfo/'CA-ON-1001'";
+//        var endPoint = "https://beam.verticalbridge.com/StoreColloApp?ColloApp='fasdfas'";
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', endPoint);
+        xhr.onload = function () {
+            //alert("onload")
+            if (xhr.status === 200) {
+                alert(xhr.responseText)
+                  var dsiteInfo = JSON.parse(xhr.responseText)[0]
+                  var dSiteNo = dsiteInfo.SiteNo;
+                alert('Site No : ' + dSiteNo);
+                // if (dSiteNo.toLowerCase() == siteNo.toLowerCase()) {
+                //   alert("dSiteNo == " + dSiteNo)
+                //SiteValidated(dsiteInfo);
+
+            }
+            else {
+                alert('Request failed.  Returned status of ' + xhr.status);
+            }
+        }
+        xhr.onloadend = function () {
+            //alert(xhr.status)
+            if (xhr.status == 0) {
+                alert("xhr.onloadend status = 0")
+            }
+        }
+
+        xhr.send();
+
+    }
+</script>
+
+</html>

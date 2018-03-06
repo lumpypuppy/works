@@ -1,0 +1,121 @@
+<style>
+
+.ms-pub-contentLayout {
+    background-color: rgba(255, 255, 255, 0.90);
+    display: table-cell;
+    min-width: auto;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 10px;
+}
+
+
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p:nth-child(1) > a:nth-child(10) > img{transition-duration: .3s; 
+transition: all .3s; }
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p:nth-child(1) > a:nth-child(10) > img:hover{transition-duration: .3s; 
+transition: all .3s; 
+transform: scale(1.1);}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p:nth-child(1) > a:nth-child(1) > img{transition-duration: .3s; 
+transition: all .3s; }
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p:nth-child(1) > a:nth-child(1) > img:hover{transition-duration: .3s; 
+transition: all .3s; 
+transform: scale(1.1);}
+
+
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p:nth-child(2) > a:nth-child(1) > img{transition-duration: .3s; 
+transition: all .3s; 
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p:nth-child(2) > a:nth-child(1) > img:hover{
+transition-duration: .3s; 
+transition: all .3s; 
+transform: scale(1.1);
+}
+
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(2) > img{transition-duration: .3s; 
+transition: all .3s; 
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(2) > img:hover{
+transition-duration: .3s; 
+transition: all .3s; 
+transform: scale(1.1);
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(3) > img{transition-duration: .3s; 
+transition: all .3s; 
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(3) > img:hover{
+transition-duration: .3s; 
+transition: all .3s; 
+transform: scale(1.1);
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(4) > img{transition-duration: .3s; 
+transition: all .3s; 
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(4) > img:hover{
+transition-duration: .3s; 
+transition: all .3s; 
+transform: scale(1.1);
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(5) > img{transition-duration: .3s; 
+transition: all .3s; 
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(5) > img:hover{
+transition-duration: .3s; 
+transition: all .3s; 
+transform: scale(1.1);
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(6) > img{transition-duration: .3s; 
+transition: all .3s; 
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(6) > img:hover{
+transition-duration: .3s; 
+transition: all .3s; 
+transform: scale(1.1);
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(7) > img{transition-duration: .3s; 
+transition: all .3s; 
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(7) > img:hover{
+transition-duration: .3s; 
+transition: all .3s; 
+transform: scale(1.1);
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(8) > img{transition-duration: .3s; 
+transition: all .3s; 
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(8) > img:hover{
+transition-duration: .3s; 
+transition: all .3s; 
+transform: scale(1.1);
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(9) > img{transition-duration: .3s; 
+transition: all .3s; 
+}
+
+#layoutsTable > tbody > tr:nth-child(1) > td > div > div > p > a:nth-child(9) > img:hover{
+transition-duration: .3s; 
+transition: all .3s; 
+transform: scale(1.1);
+}
+
+</style>

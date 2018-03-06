@@ -1,0 +1,31 @@
+<style>
+.ms-belltown-sideNavDelta > * {
+    margin: 7px;
+    padding-left: 13px;
+    padding-right: 13px;
+    padding-top: 13px;
+    position: absolute;
+    background-color: rgba(237, 237, 237, 1);
+    padding-bottom: 13px;
+    left: 1px;
+width: 190px;
+}
+
+.ms-pub-contentLayout {
+    background-color: rgba(255, 255, 255, 0.90);
+    display: table-cell;
+    min-width: 630px;
+    padding: 20px;
+    margin-top: 20px;
+    left: 225px;
+    position: absolute;
+    top: 140px;
+}
+.ms-navresizer-verticalpositionhelper .ms-navresizer-vertical {
+    top: 0px;
+    height: 800px;
+    position: absolute;
+    display: none;
+}
+
+</style>

@@ -1,0 +1,7 @@
+<script>
+var matches = document.getElementsByClassName("ms-vb-lastCell ms-cellstyle ms-vb2 ms-vb-lastCell");
+//alert(matches.length);
+</script>
+
+
+

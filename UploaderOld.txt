@@ -1,0 +1,87 @@
+<script type="text/javascript">
+'use strict';
+//alert("Hearbit")
+
+_spBodyOnLoadFunctionNames.push("BodyLoaded");
+function BodyLoaded(){
+var ldNumber = getLDNumber();
+//alert(ldNumber)
+tagDealNumber();
+//GetDealNumberFromID();
+}
+
+function getLDNumber(){
+//	var windowLocation =  window.location.toString();
+//	alert(window.location.toString());
+	  // var ldNumberPresent =  window.location.toString().indexOf("DealNumber=") > -1
+	// if(ldNumberPresent){
+	  // var urlldNumber = window.location.toString().split("DealNumber=")[1].replace("%2D","-").substring(0,9);
+	 // // alert(urlldNumber)
+	  // return urlldNumber;
+	// }
+	// else{
+        var sessionldNumber = sessionStorage.ldNumber;
+		 if(sessionldNumber){
+			return sessionldNumber;
+		 }
+		 else{
+			alert("No Leasing Deal Number available for tagging this document.")
+		}
+	}
+
+
+
+function GetDealNumberFromID(){
+	alert( window.location.toString())
+	  var itemIDPresent =  window.location.toString().indexOf("ID=") > -1 
+	  var itemID = 0;
+	  //alert(itemIDPresent)
+	if(itemIDPresent){
+	   itemID = window.location.toString().split("ID=")[1].split("&")[0];
+	  alert(itemID)
+	}	
+var endPoint = "https://verticalbridge.sharepoint.com/teams/leasing/_api/web/lists/getbytitle('Leasing%20Deal%20Pipeline')/items("+itemID+")"
+//var endPoint = "https://verticalbridge.sharepoint.com/teams/leasing/_api/web/lists/getbytitle('Library1')/items?$filter=(Deal_x0020_Number eq '"+itemID+"') and (Document_x0020_Type eq 'CollocationApplication')";
+var xhr = new XMLHttpRequest();
+xhr.open('GET', endPoint);
+xhr.onload = function() {
+//alert("onload")
+    if (xhr.status === 200) {
+		var dResponseText = JSON.parse(xhr.responseText)
+        alert('dResponseText : ' + dResponseText);
+	}
+    else {
+        alert('Request failed.  Returned status of ' + xhr.status);
+    }
+}
+xhr.onloadend = function(){
+	//alert(xhr.status)
+	if(xhr.status == 0){
+	  alert(xhr.status)
+	}
+}
+xhr.send();
+	
+	
+	
+	
+}
+
+	
+	
+	
+function tagDealNumber(){
+	var dnBox = document.querySelectorAll("input[title='Deal Number']")[0]
+	//alert(dnBox)
+	var ldNumber = getLDNumber();
+	dnBox.value = ldNumber;
+}	
+
+</script>
+<style>
+
+ #formTbl tr:nth-child(2),#formTbl tr:nth-child(3),#formTbl tr:nth-child(4),#formTbl tr:nth-child(5),#formTbl tr:nth-child(6){ 
+ display:none; 
+ } 
+
+</style>
